@@ -50,7 +50,7 @@ const config: DocsThemeConfig = {
     </div>
   ),
   project: {
-    link: 'https://github.com/uniqscripts',
+    link: 'https://github.com/uniqscripts/uniqscripts.github.io',
   },
   chat: {
     link: 'https://discord.gg/uniq-team',
