@@ -1,0 +1,18 @@
+{
+  "index": "Home",
+  "faq": "FAQ",
+  "escrow": "FiveM asset escrow errors",
+  "free": "Free Assets",
+  "paid": "Paid Assets",
+  "about": {
+    "title": "Home",
+    "type": "page",
+    "href": "pages/index.mdx"
+  },
+  "contact": {
+    "title": "Store",
+    "type": "page",
+    "href": "https://uniq.tebex.io/",
+    "newWindow": true
+  }
+}
