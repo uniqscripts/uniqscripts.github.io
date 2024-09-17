@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 function useHead() {
   const { asPath } = useRouter();
   const { frontMatter, title } = useConfig();
-  const url = `https://uniqscripts.github.io${asPath}`;
+  const url = `https://uniqscripts.github.io/${asPath}`;
   const description = frontMatter.description || "Documentation for Uniq resources for FiveM";
 
   return (
