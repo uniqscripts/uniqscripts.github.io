@@ -1,0 +1,337 @@
+---
+title: Accessible code
+---
+
+import { Tabs } from 'nextra/components'
+
+List of accesiable code for Deathmatch System
+
+<Tabs items={['setup.lua', 'client/editable.lua', 'server/editable.lua', 'config/config.lua', 'locales/en.lua']}>
+    <Tabs.Tab>
+        ```lua
+        -- If you don't have fucking idea what are you doing don't touch this :)))
+        Framework, Inv = {}, {}
+
+        local esx = GetResourceState('es_extended'):find('start')
+        local qb = GetResourceState('qb-core'):find('start')
+
+        if esx then
+            Framework = { esx = true }
+        elseif qb then
+            Framework = { qb = true }
+        end
+
+        local oxinv = GetResourceState('ox_inventory'):find('start')
+        local qsinv = GetResourceState('qs-inventory'):find('start')
+        local qbinv = GetResourceState('qb-inventory'):find('start')
+        local psinv = GetResourceState('ps-inventory'):find('start')
+        local ljinv = GetResourceState('lj-inventory'):find('start')
+        local core = GetResourceState('core_inventory'):find('start')
+        local codem = GetResourceState('codem-inventory'):find('start')
+
+
+        if oxinv then
+            Inv = { ox = true }
+        elseif qsinv then
+            Inv = { qs = true }
+        elseif qbinv or psinv or ljinv then
+            Inv = { qb = true }
+        elseif core then
+            Inv = { core = true }
+        elseif codem then
+            Inv = { codem = true }
+        end
+
+
+        SetTimeout(1000, function()
+            if table.type(Framework) == 'empty' then
+                for i = 1, 3 do
+                    warn("No Framework was found, check uniq_deathmatch/setup.lua")
+                end
+            end
+        end)
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        function Notify(msg, type)
+            lib.notify({
+                description = msg,
+                type = type,
+                position = 'bottom'
+            })
+        end
+
+        RegisterNetEvent('uniq_deathmatch:Notify', Notify)
+
+        function LockInventory(bool) end
+
+        if Inv.ox then
+            function LockInventory(bool)
+                if bool then
+                    TriggerEvent('ox_inventory:disarm', true)
+                end
+                exports.ox_inventory:weaponWheel(bool)
+                LocalPlayer.state.invBusy = bool
+                -- you can also add here healing for wounds etc
+            end
+        elseif Inv.qb then
+            function LockInventory(bool)
+                LocalPlayer.state.inv_busy = bool
+                -- you can also add here healing for wounds etc
+            end
+        elseif Inv.qs then
+            function LockInventory(bool)
+                exports['qs-inventory']:setInventoryDisabled(bool)
+                -- you can also add here healing for wounds etc
+            end
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        function HasPermission(playerId)
+            if IsPlayerAceAllowed(playerId, 'command') then return true end
+
+            return false
+        end
+
+        function GiveItem(playerId, item, count) end
+
+        if Inv.ox then
+            function GiveItem(playerId, item, count)
+                exports.ox_inventory:AddItem(playerId, item, count)
+            end
+        elseif Inv.qb then
+            function GiveItem(playerId, item, count)
+                exports['qb-inventory']:AddItem(playerId, item, count)
+            end
+        elseif Inv.qs then
+            function GiveItem(playerId, item, count)
+                exports['qs-inventory']:AddItem(playerId, item, count)
+            end
+        end
+
+        -- if you wnat to use rp name in scoreboard you can edit that her 
+        function PlayerName(playerId)
+            return GetPlayerName(playerId)
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Config = {
+            Locale = 'en',
+
+            DebugMenu = true,
+
+            -- make players invisible until deathmatch starts (when player joins deathmatch he becomes invisible so other people dont know each others position)
+            -- if your anticheat starts banning people for invisibility turn this off
+            Invisible = true,
+
+            Commands = {
+                start = {
+                    name = 'startdm',
+                    help = 'Command that start deathmatch',
+                    restricted = 'group.admin'
+                },
+                join = {
+                    name = 'joindm',
+                    help = 'Command that allows you to join deathmatch event'
+                },
+                leave = {
+                    name = 'leavedm',
+                    help = 'Command that allows you to leave deathmatch event'
+                },
+                cancel = {
+                    name = 'canceldm',
+                    help = 'Command that cancels current deathmatch event',
+                    restricted = 'group.admin'
+                },
+                leaderboard = {
+                    name = 'eventleaderboard',
+                    help = 'Command that shows leaderboard of current event'
+                }
+            },
+
+            Locations = {
+                ['Refinery'] = {
+                    -- slots depends on spawn points, we dont want 2 people to be spawned in same spot
+                    vec3(2735.483, 1468.840, 50.326),
+                    vec3(2744.339, 1501.095, 50.327),
+                    vec3(2732.370, 1529.952, 50.687),
+                    vec3(2736.068, 1544.658, 50.687),
+                    vec3(2742.047, 1567.813, 50.687),
+                    vec3(2755.911, 1578.350, 50.687),
+                    vec3(2774.037, 1678.900, 41.523),
+                    vec3(2738.927, 1671.258, 41.524),
+                    vec3(2697.384, 1672.750, 41.523),
+                },
+            },
+
+            Weapons = {
+                [`WEAPON_TECPISTOL`] = 'Tactical SMG',
+                [`WEAPON_ADVANCEDRIFLE`] = 'Advanced Rifle',
+                [`WEAPON_APPISTOL`] = 'AP Pistol',
+                [`WEAPON_ASSAULTRIFLE`] = 'Assault Rifle',
+                [`WEAPON_ASSAULTRIFLE_MK2`] = 'Assault Rifle MK2',
+                [`WEAPON_ASSAULTSHOTGUN`] = 'Assault Shotgun',
+                [`WEAPON_ASSAULTSMG`] = 'Assault SMG',
+                [`WEAPON_BULLPUPRIFLE`] = 'Bullpup Rifle',
+                [`WEAPON_BULLPUPRIFLE_MK2`] = 'Bullpup Rifle MK2',
+                [`WEAPON_BULLPUPSHOTGUN`] = 'Bullpup Shotgun',
+                [`WEAPON_CARBINERIFLE`] = 'Carbine Rifle',
+                [`WEAPON_CARBINERIFLE_MK2`] = 'Carbine Rifle MK2',
+                [`WEAPON_CERAMICPISTOL`] = 'Ceramic Pistol',
+                [`WEAPON_PISTOLXM3`] = 'WM 29 Pistol',
+                [`WEAPON_COMBATMG`] = 'Combat MG',
+                [`WEAPON_COMBATMG_MK2`] = 'Combat MG MK2',
+                [`WEAPON_COMBATPDW`] = 'Combat PDW',
+                [`WEAPON_COMBATPISTOL`] = 'Combat Pistol',
+                [`WEAPON_COMBATSHOTGUN`] = 'Combat Shotgun',
+                [`WEAPON_COMPACTLAUNCHER`] = 'Compact Grenade Launcher',
+                [`WEAPON_COMPACTRIFLE`] = 'Compact Rifle',
+                [`WEAPON_DBSHOTGUN`] = 'Double Barrel Shotgun',
+                [`WEAPON_DOUBLEACTION`] = 'Double Action Revolver',
+                [`WEAPON_EMPLAUNCHER`] = 'Compact EMP Launcher',
+                [`WEAPON_FIREEXTINGUISHER`] = 'Fire Extinguisher',
+                [`WEAPON_FIREWORK`] = 'Firework Launcher',
+                [`WEAPON_GUSENBERG`] = 'Gusenberg',
+                [`WEAPON_HEAVYRIFLE`] = 'Heavy Rifle',
+                [`WEAPON_HAZARDCAN`] = 'Hazard Can',
+                [`WEAPON_METALDETECTOR`] = 'Metal Detector',
+                [`WEAPON_HOMINGLAUNCHER`] = 'Homing Launcher',
+                [`WEAPON_HEAVYPISTOL`] = 'Heavy Pistol',
+                [`WEAPON_HEAVYSHOTGUN`] = 'Heavy Shotgun',
+                [`WEAPON_HEAVYSNIPER`] = 'Heavy Sniper',
+                [`WEAPON_HEAVYSNIPER_MK2`] = 'Heavy Sniper MK2',
+                [`WEAPON_KNIFE`] = 'Knife',
+                [`WEAPON_KNUCKLE`] = 'Knuckle Dusters',
+                [`WEAPON_MACHETE`] = 'Machete',
+                [`WEAPON_MACHINEPISTOL`] = 'Machine Pistol',
+                [`WEAPON_MARKSMANPISTOL`] = 'Marksman Pistol',
+                [`WEAPON_MARKSMANRIFLE`] = 'Marksman Rifle',
+                [`WEAPON_MARKSMANRIFLE_MK2`] = 'Marksman Rifle MK2',
+                [`WEAPON_MG`] = 'Machine Gun',
+                [`WEAPON_MINIGUN`] = 'Minigun',
+                [`WEAPON_MICROSMG`] = 'Micro SMG',
+                [`WEAPON_MILITARYRIFLE`] = 'Military Rifle',
+                [`WEAPON_MINISMG`] = 'Mini SMG',
+                [`WEAPON_MOLOTOV`] = 'Molotov',
+                [`WEAPON_MUSKET`] = 'Musket',
+                [`WEAPON_NAVYREVOLVER`] = 'Navy Revolver',
+                [`WEAPON_NIGHTSTICK`] = 'Nightstick',
+                [`WEAPON_GADGETPISTOL`] = 'Perico Pistol',
+                [`WEAPON_PISTOL`] = 'Pistol',
+                [`WEAPON_PISTOL50`] = 'Pistol .50',
+                [`WEAPON_PISTOL_MK2`] = 'Pistol MK2',
+                [`WEAPON_POOLCUE`] = 'Pool Cue',
+                [`WEAPON_PUMPSHOTGUN`] = 'Pump Shotgun',
+                [`WEAPON_PUMPSHOTGUN_MK2`] = 'Pump Shotgun MK2',
+                [`WEAPON_RAILGUN`] = 'Railgun',
+                [`WEAPON_RAILGUNXM3`] = 'Railgun XM3',
+                [`WEAPON_RAYCARBINE`] = 'Unholy Hellbringer',
+                [`WEAPON_RAYPISTOL`] = 'Up-n-Atomizer',
+                [`WEAPON_REVOLVER`] = 'Revolver',
+                [`WEAPON_REVOLVER_MK2`] = 'Revolver MK2',
+                [`WEAPON_SAWNOFFSHOTGUN`] = 'Sawn Off Shotgun',
+                [`WEAPON_SMG`] = 'SMG',
+                [`WEAPON_SMG_MK2`] = 'SMG Mk2',
+                [`WEAPON_SMOKEGRENADE`] = 'Smoke Grenade',
+                [`WEAPON_SNIPERRIFLE`] = 'Sniper Rifle',
+                [`WEAPON_SNOWBALL`] = 'Snow Ball',
+                [`WEAPON_SNSPISTOL`] = 'SNS Pistol',
+                [`WEAPON_SNSPISTOL_MK2`] = 'SNS Pistol MK2',
+                [`WEAPON_SPECIALCARBINE`] = 'Special Carbine',
+                [`WEAPON_SPECIALCARBINE_MK2`] = 'Special Carbine MK2',
+                [`WEAPON_STONE_HATCHET`] = 'Stone Hatchet',
+                [`WEAPON_AUTOSHOTGUN`] = 'Sweeper Shotgun',
+                [`WEAPON_VINTAGEPISTOL`] = 'Vintage Pistol',
+                [`WEAPON_RAYMINIGUN`] = 'Widowmaker',
+                [`WEAPON_PRECISIONRIFLE`] = 'Precision Rifle',
+                [`WEAPON_TACTICALRIFLE`] = 'Tactical Rifle',
+            }
+        }
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Locales['en'] = {
+            AdminInput = {
+                title = 'Start Event',
+                select_loc = 'Select Location',
+                item_name = 'Item Name',
+                item_name_desc = 'Item that will be reward',
+                duration = 'Event Duration (in min)',
+                first = '1st place reward',
+                second = '2nd place reward',
+                third = '3rd place reward',
+                application_dur = 'Application duration',
+                weapon = 'Select Weapon',
+                countdown = 'Countdown Time (in sec)'
+            },
+
+            Stats = {
+                ('Your Kills: %s  \n'),
+                ('Your Deaths: %s  \n'),
+                ('Time Left: %02d:%02d'),
+                ('  \n'),
+                ('1st: %s  \n'),
+                ('2nd: %s  \n'),
+                ('3rd: %s'),
+            },
+
+            EventNotify = {
+                ('Deathmatch event is live!  \n'),
+                ('Location: %s  \n'),
+                ('Weapon: %s  \n'),
+                ('/joindm - to join  \n'),
+                ('/leavedm - to leave deatmatch event  \n'),
+                ('Players: %s/%s  \n'),
+                ('Application expires in: %s sec  \n'),
+            },
+
+            Notify = {
+                reward = 'You got $%s for ending on %s. place in deatmatch event',
+                no_players = 'There is not enough people to start event',
+                already_running = 'There is already deatmatch running',
+                no_dm = 'There is no deatmatch event running at moment',
+                already_joined = 'You already joined event',
+                max = 'The maximum allowed number of participants joined the event',
+                expired = 'Application has expired',
+                joined = 'You joined event',
+                no_joined = 'You didnt join event',
+                cant_leave = 'You cant leave anymore',
+                you_left = 'You left event',
+                cancled = 'Event was cancled by admin'
+            },
+
+            kills = 'Kills: %s',
+            kills2 = '%s (Kills: %s)',
+
+            Logs = {
+                start = {
+                    a = 'Event Started',
+                    b = '`%s` has started deathmatch event!\nLocation: `%s`\nWeapon: `%s`'
+                },
+                finish = {
+                    a = 'Event Finished',
+                    b = '`%s.` | %s | Kills: `%s`\n'
+                },
+                cancled = {
+                    a = 'Event Cancled',
+                    b = 'Event was cancled - not enough players'
+                },
+                unauthorized = {
+                    a = 'Unauthorized event execution',
+                    b = '%s has tried to execute `uniq_deathmatch:server:Start` without permission'
+                }
+            }
+        }
+        ```
+    </Tabs.Tab>
+</Tabs>

@@ -1,0 +1,694 @@
+---
+title: Installation
+---
+
+import { Steps, FileTree, Tabs } from 'nextra/components'
+
+Installationg Guide
+
+<Steps>
+### Dependencies List
+List of compatible assets
+
+<FileTree>
+  <FileTree.Folder name="Library (Must use)" defaultOpen>
+    <FileTree.File name={<a href="https://github.com/overextended/ox_lib" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ox_lib</a>} />
+  </FileTree.Folder>
+
+  <FileTree.Folder name="Framework (You only need one)" defaultOpen>
+    <FileTree.File name={<a href="https://github.com/esx-framework/esx_core" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ESX</a>} />
+    <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-core" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>QB Core</a>} />
+    <FileTree.File name={<a href="https://github.com/Qbox-project" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>QBOX</a>} />
+  </FileTree.Folder>
+
+  <FileTree.Folder name="Inventory (You only need one)" defaultOpen>
+    <FileTree.File name={<a href="https://github.com/overextended/ox_inventory/releases" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ox_inventory</a>} />
+    <FileTree.File name={<a href="https://buy.quasar-store.com/package/4770732" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qs-inventory</a>} />
+    <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-inventory" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qb-inventory</a>} />
+    <FileTree.File name={<a href="https://github.com/Project-Sloth/ps-inventory" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ps-inventory</a>} />
+    <FileTree.File name={<a href="https://github.com/loljoshie/lj-inventory" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>lj-inventory</a>} />
+    <FileTree.File name={<a href="https://core.tebex.io/package/5123274" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>core_inventory</a>} />
+    <FileTree.File name={<a href="https://forum.cfx.re/t/codem-minventory-advanced-inventory-system/5167702" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>codem-inventory</a>} />
+  </FileTree.Folder>
+
+  <FileTree.Folder name="Ambulance Job (You only need one)" defaultOpen>
+    <FileTree.File name={<a href="https://github.com/esx-framework/esx_ambulancejob" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>esx_ambulancejob</a>} />
+    <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-ambulancejob" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qb-ambualncejob</a>} />
+    <FileTree.File name={<a href="https://forum.cfx.re/t/esx-qbcore-wasabis-advanced-ambulance-job/4914860" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>wasabi_ambulance</a>} />
+    <FileTree.File name={<a href="https://github.com/Qbox-project/qbx_medical" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qbx_medical</a>} />
+  </FileTree.Folder>
+</FileTree>
+ 
+### Modify Ambulance job & Inventory
+
+<Tabs items={['esx_ambulancejob', 'qb-ambualncejob', 'wasabi_ambulance', 'qbx_medical', 'codem-inventory', 'core_inventory']}>
+    <Tabs.Tab>
+        <Steps>
+            ### Find function
+            In the `esx_ambulancejob/client/main.lua` file, press `CTRL + F` to search for: `function OnPlayerDeath()`
+            ### Modify Code
+
+            ```lua {2} copy
+            function OnPlayerDeath()
+                if LocalPlayer.state.inDeathmatch == true then return end
+                isDead = true
+                ESX.CloseContext()
+                ClearTimecycleModifier()
+                SetTimecycleModifier("REDMIST_blend")
+                SetTimecycleModifierStrength(0.7)
+                SetExtraTimecycleModifier("fp_vig_red")
+                SetExtraTimecycleModifierStrength(1.0)
+                SetPedMotionBlur(PlayerPedId(), true)
+                TriggerServerEvent('esx_ambulancejob:setDeathStatus', true)
+                StartDeathTimer()
+                StartDeathCam()
+                StartDistressSignal()
+            end
+            ```
+        </Steps>
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        <Steps>
+            ### Find function
+            In the `qb-ambulancejob/client/death.lua` file, press `CTRL + F` to search for: `AddEventHandler('gameEventTriggered', function(event, data)`
+            ### Modify Code
+
+            ```lua {2} copy
+            AddEventHandler('gameEventTriggered', function(event, data)
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if event == "CEventNetworkEntityDamage" then
+                    local victim, attacker, victimDied, weapon = data[1], data[2], data[4], data[7]
+                    if not IsEntityAPed(victim) then return end
+                    if victimDied and NetworkGetPlayerIndexFromPed(victim) == PlayerId() and IsEntityDead(PlayerPedId()) then
+                        if not InLaststand then
+                            SetLaststand(true)
+                        elseif InLaststand and not isDead then
+                            SetLaststand(false)
+                            local playerid = NetworkGetPlayerIndexFromPed(victim)
+                            local playerName = GetPlayerName(playerid) .. " " .. "("..GetPlayerServerId(playerid)..")" or Lang:t('info.self_death')
+                            local killerId = NetworkGetPlayerIndexFromPed(attacker)
+                            local killerName = GetPlayerName(killerId) .. " " .. "("..GetPlayerServerId(killerId)..")" or Lang:t('info.self_death')
+                            local weaponLabel = (QBCore.Shared.Weapons and QBCore.Shared.Weapons[weapon] and QBCore.Shared.Weapons[weapon].label) or 'Unknown'
+                            local weaponName = (QBCore.Shared.Weapons and QBCore.Shared.Weapons[weapon] and QBCore.Shared.Weapons[weapon].name) or 'Unknown'
+                            TriggerServerEvent("qb-log:server:CreateLog", "death", Lang:t('logs.death_log_title', {playername = playerName, playerid = GetPlayerServerId(playerid)}), "red", Lang:t('logs.death_log_message', {killername = killerName, playername = playerName, weaponlabel = weaponLabel, weaponname = weaponName}))
+                            deathTime = Config.DeathTime
+                            OnDeath()
+                            DeathTimer()
+                        end
+                    end
+                end
+            end)
+            ```
+
+            ### Find Thread
+            In the `qb-ambulancejob/client/main.lua` file, press `CTRL + F` to search for: `local hit, bone = GetPedLastDamageBone(ped)`
+            ### Modify Code
+            Replace that whole thread with this:
+            ```lua {3} copy
+            CreateThread(function()
+                while true do
+                    if not LocalPlayer.state.inDeathmatch or LocalPlayer.state.inDeathmatch == false then
+                        local ped = PlayerPedId()
+                        local health = GetEntityHealth(ped)
+                        local armor = GetPedArmour(ped)
+
+                        if not playerHealth then
+                            playerHealth = health
+                        end
+
+                        if not playerArmor then
+                            playerArmor = armor
+                        end
+
+                        local armorDamaged = (playerArmor ~= armor and armor < (playerArmor - Config.ArmorDamage) and armor > 0) -- Players armor was damaged
+                        local healthDamaged = (playerHealth ~= health) -- Players health was damaged
+
+                        local damageDone = (playerHealth - health)
+
+                        if armorDamaged or healthDamaged then
+                            local hit, bone = GetPedLastDamageBone(ped)
+                            local bodypart = Config.Bones[bone]
+                            local weapon = GetDamagingWeapon(ped)
+
+                            if hit and bodypart ~= 'NONE' then
+                                local checkDamage = true
+                                if damageDone >= Config.HealthDamage then
+                                    if weapon then
+                                        if armorDamaged and (bodypart == 'SPINE' or bodypart == 'UPPER_BODY') or weapon == Config.WeaponClasses['NOTHING'] then
+                                            checkDamage = false -- Don't check damage if the it was a body shot and the weapon class isn't that strong
+                                            if armorDamaged then
+                                                TriggerServerEvent("hospital:server:SetArmor", GetPedArmour(ped))
+                                            end
+                                        end
+
+                                        if checkDamage then
+                                            if IsDamagingEvent(damageDone, weapon) then
+                                                CheckDamage(ped, bone, weapon, damageDone)
+                                            end
+                                        end
+                                    end
+                                elseif Config.AlwaysBleedChanceWeapons[weapon] then
+                                    if armorDamaged and (bodypart == 'SPINE' or bodypart == 'UPPER_BODY') or weapon == Config.WeaponClasses['NOTHING'] then
+                                        checkDamage = false -- Don't check damage if the it was a body shot and the weapon class isn't that strong
+                                    end
+                                    if math.random(100) < Config.AlwaysBleedChance and checkDamage then
+                                        ApplyBleed(1)
+                                    end
+                                end
+                            end
+
+                            CheckWeaponDamage(ped)
+                        end
+
+                        playerHealth = health
+                        playerArmor = armor
+
+                        if not isInHospitalBed then
+                            ProcessDamage(ped)
+                        end
+                    end
+                    Wait(100)
+                end
+            end)
+            ```
+        </Steps>
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        <Steps>
+            ### Find Event
+            In the `wasabi_ambulance/game/client/client.lua` file, press `CTRL + F` to search for: `AddEventHandler('wasabi_bridge:onPlayerDeath', function(data)`
+
+            ### Modify Code
+
+            ```lua {2} copy
+            AddEventHandler('wasabi_bridge:onPlayerDeath', function(data)
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if OccupyingStretcher then
+                    local occupyingStretcher = OccupyingStretcher
+                    OccupyingStretcher = nil
+
+
+                    CreateThread(function()
+                        local stretcherID = GetActiveStretcherIDFromEntity(occupyingStretcher)
+                        local serverID = GetPlayerServerId(PlayerId())
+                        if stretcherID and serverID then
+                            Wait(100)
+                            TriggerServerEvent('wasabi_ambulance:placePlayerOnStretcher', stretcherID, serverID)
+                        end
+                    end)
+                end
+                if not isDead then originalDeath = data.deathCause end
+                if isDead == 'laststand' and originalDeath then
+                    data.deathCause = originalDeath
+                    originalDeath = nil
+                end
+                if data.deathCause == 0 then
+                    local deathSource = wsb.getClosestPlayer(vec3(data.victimCoords.x, data.victimCoords.y, data.victimCoords.z), 3.0)
+                    if deathSource then
+                        local deathSourcePed = GetPlayerPed(deathSource)
+                        local weapon = GetSelectedPedWeapon(deathSourcePed)
+                        for k, v in pairs(InjuryReasons) do
+                            for i = 1, #v do
+                                if v[i] == weapon then
+                                    deathInjury = tostring(k)
+                                    break
+                                end
+                            end
+                        end
+                        if deathInjury == 'shot' then deathInjury = 'beat' end
+                    end
+                elseif data.deathCause == -842959696 then
+                    deathInjury = 'bleedout'
+                else
+                    for k, v in pairs(InjuryReasons) do
+                        for i = 1, #v do
+                            if v[i] == data.deathCause then
+                                deathInjury = tostring(k)
+                                break
+                            end
+                        end
+                    end
+                end
+                PlayerInjury = {}
+                if Config.DeathLogs then
+                    local killer = GetPedSourceOfDeath(cache.ped)
+                    local dCause = GetPedCauseOfDeath(cache.ped)
+                    local deathCause
+                    if IsEntityAPed(killer) and IsPedAPlayer(killer) then
+                        killer = NetworkGetPlayerIndexFromPed(killer)
+                    elseif IsEntityAVehicle(killer) and IsEntityAPed(GetPedInVehicleSeat(killer, -1)) and IsPedAPlayer(GetPedInVehicleSeat(killer, -1)) then
+                        killer = NetworkGetPlayerIndexFromPed(GetPedInVehicleSeat(dCause, -1))
+                    end
+                    if (killer == PlayerId()) then
+                        deathCause = 'suicide'
+                    elseif (killer == nil or killer == 0) then
+                        deathCause = 'unknown'
+                    end
+                    if deathCause == 'suicide' or deathCause == 'unknown' then
+                        TriggerServerEvent('wasabi_ambulance:logDeath', dCause, nil)
+                    elseif killer then
+                        TriggerServerEvent('wasabi_ambulance:logDeath', dCause, GetPlayerServerId(killer))
+                    end
+                end
+                if Config.MythicHospital then
+                    TriggerEvent('mythic_hospital:client:RemoveBleed')
+                    TriggerEvent('mythic_hospital:client:ResetLimbs')
+                end
+                TriggerServerEvent('wasabi_ambulance:injurySync', deathInjury)
+                if not Config.LastStand or IsPedInAnyVehicle(cache.ped, false) then
+                    OnPlayerDeath(false)
+                    return
+                end
+                OnLastStand()
+            end)
+            ```
+
+            ### Find Event
+            In the `wasabi_ambulance/game/client/client.lua` file, press `CTRL + F` to search for: `AddEventHandler('gameEventTriggered', function(event, data)`
+            ### Modify Code
+
+            ```lua {2} copy
+                AddEventHandler('gameEventTriggered', function(event, data)
+                    if LocalPlayer.state.inDeathmatch == true then return end
+                    if event == "CEventNetworkEntityDamage" then
+                        local victim = data[1]
+                        local playerId = NetworkGetPlayerIndexFromPed(victim)
+                        if playerId ~= PlayerId() then return end
+                        if (IsPedDeadOrDying(victim, true) or IsPedFatallyInjured(victim)) then return end
+                        local health = GetEntityHealth(cache.ped)
+                        local armour = GetPedArmour(cache.ped)
+                        if not previousHealth then previousHealth = health end
+                        if not previousArmour then previousArmour = armour end
+                        local healthDamage = (previousHealth - health)
+                        local armourDamage = (previousArmour - armour)
+                        if healthDamage > (Config?.DamageDetectThreshold?.health or 10) then
+                            ChanceInjury()
+                        elseif armourDamage > (Config?.DamageDetectThreshold?.armour or 5) then
+                            ChanceInjury()
+                        end
+                    end
+                end)
+            ```
+        </Steps>
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        <Steps>
+            ### Find function
+            In the `qbx_medical/client/death.lua` file, press `CTRL + F` to search for: `AddEventHandler('gameEventTriggered', function(event, data)`
+            ### Modify Code
+
+            ```lua {2} copy
+            AddEventHandler('gameEventTriggered', function(event, data)
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if event ~= 'CEventNetworkEntityDamage' then return end
+                local victim, attacker, victimDied, weapon = data[1], data[2], data[4], data[7]
+                if not IsEntityAPed(victim) or not victimDied or NetworkGetPlayerIndexFromPed(victim) ~= cache.playerId or not IsEntityDead(cache.ped) then return end
+                if DeathState == sharedConfig.deathState.ALIVE then
+                    Wait(1000)
+                    StartLastStand(attacker, weapon)
+                elseif DeathState == sharedConfig.deathState.LAST_STAND then
+                    EndLastStand()
+                    logDeath(victim, attacker, weapon)
+                    DeathTime = config.deathTime
+                    OnDeath(attacker, weapon)
+                end
+            end)
+            ```
+            ### Find code
+            In the `qbx_medical/client/wounding.lua` file, press `CTRL + F` to search for: `local level = getWorstInjury()`
+
+            ### Replce whole thread
+
+            ```lua copy
+            local wait = 1000
+            CreateThread(function()
+                while true do
+                    if not LocalPlayer.state.inDeathmatch then
+                        if NumInjuries > 0 then
+                            local level = getWorstInjury()
+                            SetPedMoveRateOverride(cache.ped, sharedConfig.woundLevels[level].movementRate)
+                            wait = 5
+                        else
+                            wait = 1000
+                        end
+                    end
+
+                    Wait(wait)
+                end
+            end)
+            ```
+
+            ### Find code
+            In the `qbx_medical/client/wounding.lua` file, press `CTRL + F` to search for: `if enableBleeding then`
+
+            ### Replce whole thread
+
+            ```lua copy
+            CreateThread(function()
+                Wait(2500)
+                while true do
+                    Wait(1000)
+                    if not LocalPlayer.state.inDeathmatch then
+                        if enableBleeding then
+                            checkBleeding()
+                        end
+                    end
+                end
+            end)
+            ```
+
+            ### Find code
+            In the `qbx_medical/client/damage.lua` file, press `CTRL + F` to search for: `if damageEffectsEnabled then`
+
+            ### Replce whole thread
+
+            ```lua copy
+            CreateThread(function()
+                while true do
+                    if not LocalPlayer.state.inDeathmatch then
+                        checkForDamage()
+                        if damageEffectsEnabled then
+                            ApplyDamageEffects()
+                        end
+                    end
+                    Wait(100)
+                end
+            end)
+            ```
+        </Steps>
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        <Steps>
+            ### Find code
+            In the `codem-inventory/editable/editableclient.lua` file, press `CTRL + F` to search for: `function UseSlot(slotnumber)`
+
+            ### Replace code
+
+            ```lua copy {2}
+            function UseSlot(slotnumber)
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if not CanAccesInventory() then
+                    return
+                end
+                slotnumber = tostring(slotnumber)
+                if ClientInventory[slotnumber] then
+                    TriggerServerEvent('codem-inventory:server:UseItem', slotnumber, ClientInventory[slotnumber].name)
+                end
+            end
+            ```
+
+            ### Find code
+            In the `codem-inventory/editable/editableclient.lua` file, press `CTRL + F` to search for: `RegisterNetEvent('codem-inventory:openInventory', function()`
+
+            ### Replce code
+
+            ```lua copy {2}
+            RegisterNetEvent('codem-inventory:openInventory', function()
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if not nuiLoaded and Core == nil then
+                    return
+                end
+                if not CanAccesInventory() then
+                    return
+                end
+                if jobData.name == nil or jobData.playerid == nil then
+                    local namedata = TriggerCallback('codem-inventory:GetPlayerNameandid')
+                    if namedata then
+                        jobData.playername = namedata.name or 'UNKOWN'
+                        jobData.playerid = namedata.id or 'UNKOWN'
+                    end
+                end
+                OpenInventory = true
+                if Config.AnimPlayer['openinventory'] then
+                    openAnim()
+                end
+                ToggleHotbar(false)
+                NuiMessage('LOAD_INVENTORY', ClientInventory)
+                NuiMessage('PLAYERNAME_ID', jobData)
+                SetNuiFocus(true, true)
+                CheckVehicleInventory()
+                if currentDrop then
+                    NuiMessage('UPDATE_GROUND', ClientGround[currentDrop])
+                end
+                if not PedScreen then
+                    Remove2d()
+                else
+                    CreatePedScreen()
+                end
+                if Config.DurabilitySystem then
+                    TriggerServerEvent('codem-inventory:checkdurabilityItems')
+                end
+                if Config.ItemClothingSystem then
+                    TriggerEvent('codem-inventory:loadClothingInventory')
+                end
+            end)
+            ```
+        </Steps>
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        <Steps>
+            ### Find code
+            In the `core_inventory/client/main.lua` file, press `CTRL + F` to search for: `RegisterCommand('slot' .. i, function()`
+
+            ### Replace code
+
+            ```lua copy {3}
+            for i = 3, 9 do
+                RegisterCommand('slot' .. i, function()
+                    if LocalPlayer.state.inDeathmatch == true then return end
+                    if not IsPauseMenuActive() and not inventoryOpened and not IsNuiFocused() then
+                        for k, v in pairs(Keybinds) do
+                            if tostring(k) == tostring(i) then
+                                TriggerServerEvent('core_inventory:server:useItem', v.item, v.exact)
+                            end
+                        end
+                    end
+                end)
+                RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
+            end
+            ```
+
+            ### Find code
+            In the `core_inventory/client/main.lua` file, press `CTRL + F` to search for: `function useWeapon(weapon, inventory)`
+
+            ### Replace code
+
+            ```lua copy {2}
+            function useWeapon(weapon, inventory)
+                if LocalPlayer.state.inDeathmatch == true then return end
+                local ped = PlayerPedId()
+                local weaponName = tostring(weapon.name)
+
+                if weapon.metadata.durability then
+                    if weapon.metadata.durability <= 0 then
+                        Citizen.Trace('WEAPON IS BROKEN!')
+                        return
+                    end
+                end
+
+                if currentWeapon then
+                    Holders[currentWeaponInventory].metadata.ammo = GetAmmoInPedWeapon(ped, currentWeapon)
+                    TriggerServerEvent('core_inventory:server:updateAmmo', currentWeaponData.id, currentWeaponInventory,
+                        GetAmmoInPedWeapon(ped, currentWeapon))
+                end
+
+                if currentWeapon == weaponName then
+
+                    SetCurrentPedWeapon(ped, 'WEAPON_UNARMED', true)
+                    RemoveAllPedWeapons(ped, true)
+                    currentWeapon = nil
+                    currentWeaponData = nil
+                    currentWeaponInventory = nil
+
+                    SendNUIMessage({
+                        type = 'weaponUI',
+                        data = weapon,
+                        show = false,
+                        ammo = 0,
+                        maxammo = 0
+
+                    })
+                elseif weaponName == "weapon_stickybomb" or weaponName == "weapon_pipebomb" or weaponName == "weapon_smokegrenade" or
+                    weaponName == "weapon_flare" or weaponName == "weapon_proxmine" or weaponName == "weapon_ball" or weaponName ==
+                    "weapon_molotov" or weaponName == "weapon_grenade" or weaponName == "weapon_bzgas" then
+                    GiveWeaponToPed(ped, GetHashKey(weaponName), 1, false, false)
+                    SetPedAmmo(ped, GetHashKey(weaponName), 1)
+                    SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
+                    currentWeapon = weaponName
+                    currentWeaponData = weapon
+                    currentWeaponInventory = inventory
+
+                    Citizen.CreateThread(function()
+                        while true do
+                            if IsPedShooting(ped) then
+                                currentWeapon = nil
+                                currentWeaponData = nil
+                                currentWeaponInventory = nil
+                                Holders[inventory] = nil
+
+                                TriggerServerEvent('core_inventory:server:removeThrowable', inventory)
+
+                                SendNUIMessage({
+                                    type = "weaponUI",
+                                    data = weapon,
+                                    show = false,
+                                    ammo = 0,
+                                    maxammo = 0
+                                })
+                                break
+                            end
+                            Citizen.Wait(1)
+                        end
+                    end)
+
+                else
+
+                    local ammo = weapon.metadata.ammo or 0
+                    if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
+                        ammo = 4000
+                    end
+                    GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
+                    SetPedAmmo(ped, GetHashKey(weaponName), ammo)
+                    SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
+
+                    SendNUIMessage({
+                        type = 'weaponUI',
+                        data = weapon,
+                        show = false,
+                        ammo = 0,
+                        maxammo = 0
+
+                    })
+                    Citizen.Wait(100)
+
+                    SendNUIMessage({
+                        type = 'weaponUI',
+                        data = weapon,
+                        show = true,
+                        ammo = ammo,
+                        maxammo = 100
+
+                    })
+
+                    for k, v in pairs(weapon.metadata.attachments) do
+
+                        if v then
+
+                            if v.componentHash then
+                                GiveWeaponComponentToPed(ped, GetHashKey(weaponName), GetHashKey(v.componentHash))
+                            elseif v.componentTint then
+                                SetPedWeaponTintIndex(ped, GetHashKey(weaponName), v.componentTint)
+                            end
+                        end
+
+                    end
+
+                    currentWeapon = weaponName
+                    currentWeaponInventory = inventory
+                    currentWeaponData = weapon
+                    print(json.encode(currentWeaponData, {indent = true}))
+                end
+            end
+            ```
+
+            ### Find code
+            In the `core_inventory/client/main.lua` file, press `CTRL + F` to search for: `function openInventory()`
+
+            ### Replace code
+
+            ```lua copy {2}
+            function openInventory()
+                if LocalPlayer.state.inDeathmatch == true then return end
+                if inventoryOpened then
+                    return
+                end
+                inventoryOpened = true
+
+                TriggerServerEvent('core_inventory:server:openPersonalInventory')
+
+                SendNUIMessage({
+
+                    type = 'openBase',
+                    config = Config,
+                    cid = cid,
+                    settings = Settings,
+                    admin = Admin,
+                    qbitems = Items
+
+                })
+
+                local coords = GetEntityCoords(PlayerPedId())
+
+                for k, v in pairs(Drops) do
+
+                    if #(v.coords - coords) < 2.0 then
+
+                        TriggerServerEvent('core_inventory:server:openDrop', k)
+
+                    end
+
+                end
+
+                for k, v in pairs(Config.Storage) do
+
+                    if #(v.coords - coords) < 2.0 then
+
+                        if v.jobs then
+                            for _, g in ipairs(v.jobs) do
+                                if g == job then
+                                    if v.personal then
+                                        TriggerServerEvent('core_inventory:server:openInventory', k .. '-' .. cid, v.inventory)
+
+                                        break
+                                    else
+                                        TriggerServerEvent('core_inventory:server:openInventory', k, v.inventory)
+                                        break
+                                    end
+                                end
+                            end
+                        else
+
+                            if v.personal then
+                                TriggerServerEvent('core_inventory:server:openInventory', k .. '-' .. cid, v.inventory)
+
+                            else
+                                TriggerServerEvent('core_inventory:server:openInventory', k, v.inventory)
+
+                            end
+
+                        end
+
+                    end
+
+                end
+
+                for k, v in pairs(ExternalInventories) do
+
+                    if #(v.coords - coords) < 2.0 then
+
+                        TriggerServerEvent('core_inventory:server:openInventory', k, v.type)
+                        break
+
+                    end
+
+                end
+
+                handleTrunk(true)
+                zoomPlayer(true)
+                SetNuiFocus(true, true)
+            end
+            ```
+        </Steps>
+    </Tabs.Tab>
+</Tabs>
+
+### Installing Asset
+
+Find your `resources` folder, inside create a new folder named `[uniq]` if one doesn’t already exist, move the asset from [Keymaster](https://keymaster.fivem.net/login?return_url=/assets) into `[uniq]`, and add `ensure [uniq]` at the end of your `server.cfg` file. Make sure that all dependencies listed above are started before our asset.
+
+</Steps>
