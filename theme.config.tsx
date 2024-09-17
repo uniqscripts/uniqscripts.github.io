@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 function useHead() {
   const { asPath } = useRouter();
   const { frontMatter, title } = useConfig();
-  const url = `https://docsa.uniq-scripts.com${asPath}`;
+  const url = `https://uniqscripts.github.io${asPath}`;
   const description = frontMatter.description || "Documentation for Uniq resources for FiveM";
 
   return (
@@ -55,7 +55,7 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://discord.gg/uniq-team',
   },
-  docsRepositoryBase: 'https://github.com/uniqscripts/docs/blob/main',
+  docsRepositoryBase: 'https://github.com/uniqscripts/uniqscripts.github.io/blob/main',
   footer: {
     text: 'Uniq',
   },
