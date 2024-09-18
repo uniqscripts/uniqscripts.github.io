@@ -8,6 +8,13 @@ For the ambulance job, you'll need to prevent the execution of the player's deat
 
 To prevent inventory access, item usage, and the revive event during deathmatch, add the following code to your assets:
 
+
+## Client
 ```lua copy
 if LocalPlayer.state.inDeathmatch == true then return end
+```
+
+## Server
+```lua copy
+if Player(source).state.inDeathmatch == true then return end
 ```
