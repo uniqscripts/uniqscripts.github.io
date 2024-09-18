@@ -1,0 +1,13 @@
+---
+title: Integration for other inventories & ambulance scripts
+---
+
+To make this asset fully functional, we need to modify both the inventory and the ambulance job scripts. While a player is in deathmatch mode, they should not have the ability to open their inventory or use items (especially weapons).
+
+For the ambulance job, you'll need to prevent the execution of the player's death event, as reviving is handled by our asset. Relying on the ambulance function for such dynamic scenarios is too slow.
+
+To prevent inventory access, item usage, and the revive event during deathmatch, add the following code to your assets:
+
+```lua copy
+if LocalPlayer.state.inDeathmatch == true then return end
+```

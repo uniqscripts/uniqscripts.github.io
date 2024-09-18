@@ -2,7 +2,7 @@
 title: Installation
 ---
 
-import { Steps, FileTree, Tabs } from 'nextra/components'
+import { Steps, FileTree, Tabs, Callout } from 'nextra/components'
 
 Installationg Guide
 
@@ -10,18 +10,19 @@ Installationg Guide
 ### Dependencies List
 List of compatible assets
 
+
 <FileTree>
-  <FileTree.Folder name="Library (Must use)" defaultOpen>
+  <FileTree.Folder name="Library (Hard Dependency)" defaultOpen>
     <FileTree.File name={<a href="https://github.com/overextended/ox_lib" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ox_lib</a>} />
   </FileTree.Folder>
 
-  <FileTree.Folder name="Framework (You only need one)" defaultOpen>
+  <FileTree.Folder name="Compatible Framework's" defaultOpen>
     <FileTree.File name={<a href="https://github.com/esx-framework/esx_core" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ESX</a>} />
     <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-core" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>QB Core</a>} />
     <FileTree.File name={<a href="https://github.com/Qbox-project" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>QBOX</a>} />
   </FileTree.Folder>
 
-  <FileTree.Folder name="Inventory (You only need one)" defaultOpen>
+  <FileTree.Folder name="Compatible Inventories" defaultOpen>
     <FileTree.File name={<a href="https://github.com/overextended/ox_inventory/releases" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>ox_inventory</a>} />
     <FileTree.File name={<a href="https://buy.quasar-store.com/package/4770732" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qs-inventory</a>} />
     <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-inventory" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qb-inventory</a>} />
@@ -31,13 +32,17 @@ List of compatible assets
     <FileTree.File name={<a href="https://forum.cfx.re/t/codem-minventory-advanced-inventory-system/5167702" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>codem-inventory</a>} />
   </FileTree.Folder>
 
-  <FileTree.Folder name="Ambulance Job (You only need one)" defaultOpen>
+  <FileTree.Folder name="Compatible Ambulance Jobs" defaultOpen>
     <FileTree.File name={<a href="https://github.com/esx-framework/esx_ambulancejob" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>esx_ambulancejob</a>} />
     <FileTree.File name={<a href="https://github.com/qbcore-framework/qb-ambulancejob" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qb-ambualncejob</a>} />
     <FileTree.File name={<a href="https://forum.cfx.re/t/esx-qbcore-wasabis-advanced-ambulance-job/4914860" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>wasabi_ambulance</a>} />
     <FileTree.File name={<a href="https://github.com/Qbox-project/qbx_medical" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>qbx_medical</a>} />
   </FileTree.Folder>
 </FileTree>
+
+<Callout type="warning" emoji="⚠️">
+  In case your inventory or ambulance job isn't in list, check [this](../deathmatch/integration)
+</Callout>
  
 ### Modify Ambulance job & Inventory
 
