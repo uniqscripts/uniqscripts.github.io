@@ -21,13 +21,17 @@ Install the latest stable version of [MariaDB](https://mariadb.com/downloads/com
 The SQL code should install automatically. However, if it doesn't, you can manually run the following code using [HeidiSQL](https://www.heidisql.com/).
 
 ```sql copy
-  ovdje sql
+CREATE TABLE `uniq-objects` (
+    `id` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8mb3_general_ci',
+    `data` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8mb3_general_ci'
+) COLLATE='utf8mb3_general_ci' ENGINE=InnoDB;
 ```
 
 ### Install Dependecies
 Download and install the following dependencies:
 - [oxmysql](https://github.com/overextended/oxmysql)
 - [ox_lib](https://github.com/overextended/ox_lib)
+- [ox_target](https://github.com/overextended/ox_target)
 - up-to-date [server artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/)
  
 Download dependencies and add them to your `resources` folder.

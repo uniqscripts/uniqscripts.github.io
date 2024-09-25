@@ -1,3 +1,251 @@
 ---
 title: Accessible code
 ---
+
+import { Tabs } from 'nextra/components'
+
+List of accesiable code for Object Creator
+
+<Tabs items={['client/editable.lua', 'server/editable.lua', 'config/config.lua', 'locales/en.lua']}>
+    <Tabs.Tab>
+        ```lua
+        function sendNotify(title, description, type)
+            lib.notify({
+                title = title,
+                description = description,
+                duration = Shared.Notify.duration,
+                type = type,
+                position = Shared.Notify.position
+            })
+        end
+
+        RegisterNetEvent('objectcreator:notify', sendNotify)
+
+        -- Text UI
+        function textUI(description, icon)
+            lib.showTextUI(description, {
+                position = Shared.TextUI.position,
+                icon = icon
+            })
+        end
+
+        function hideTextUI()
+            lib.hideTextUI()
+        end
+
+        -- Progress Bar
+        function progressBar(duration, label, dict, clip)
+            lib.progressBar({
+                duration = duration,
+                label = label,
+                useWhileDead = false,
+                canCancel = false,
+                disable = {
+                    car = true,
+                },
+                anim = {
+                    dict = dict,
+                    clip = clip
+                }
+            })
+        end
+
+        -- 3D Text
+        function DrawText3D(x, y, z, text)
+            local onScreen, _x, _y = World3dToScreen2d(x, y, z)
+            local px, py, pz = table.unpack(GetGameplayCamCoords())
+            
+            SetTextScale(0.5, 0.5)
+            SetTextFont(4)
+            SetTextProportional(1)
+            SetTextColour(255, 255, 255, 215)
+            SetTextEntry("STRING")
+            SetTextCentre(1)
+            AddTextComponentString(text)
+            DrawText(_x, _y)
+        end
+
+        -- Draw Marker
+        function DrawMarkerAtCoords(x, y, z, scale)
+            DrawMarker(1, x, y, z, 0, 0, 0, 0, 0, 0, scale.x, scale.y, scale.z, 255, 255, 255, 255, false, true, 2, nil, nil, false)
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        -- Discord Logs
+        local webhook = Shared.Logs.webhook
+
+        function logger(message)
+            if Shared.Logs.enabled then
+                if webhook ~= '' then
+                    PerformHttpRequest(webhook, function(status) end, 'POST', json.encode({
+                        username = cache.resource,
+                        embeds = {{
+                            color = Shared.Logs.color,
+                            title = Shared.Logs.servername,
+                            description = message,
+                            footer = {
+                                text = os.date(),
+                                icon_url = Shared.Logs.icon_url
+                            }
+                        }}
+                    }), { ['Content-Type'] = 'application/json' })
+                end
+            end
+        end
+
+        -- Collectible Function
+        function collectibleReward()
+            -- code for sending reward after collecting object
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Shared = {
+            Locale = 'en',
+
+            Notify = {
+                duration = 5000, -- miliseconds
+                position = 'top-right' -- 'top' or 'top-right' or 'top-left' or 'bottom' or 'bottom-right' or 'bottom-left' or 'center-right' or 'center-left'
+            },
+            
+            TextUI = {
+                position = 'right-center' -- 'right-center' or 'left-center' or 'top-center' or 'bottom-center'
+            },
+
+            Logs = {
+                enabled = true,
+                webhook = '',
+                servername = 'Uniq Scripts',
+                color = 6579450,
+                icon_url = 'https://dunb17ur4ymx4.cloudfront.net/webstore/logos/046c8efd198a2806b6ae46490f6aa780a225125e.png'
+            },
+
+            Commands = {
+                adminmenu = {
+                    name = 'objectcreator',         -- command for accessing admin panel
+                    restricted = 'group.admin',     -- group that will have access to the command 
+                }
+            },
+
+            Keys = { -- https://docs.fivem.net/docs/game-references/controls/
+                finish = 191,
+                cancel = 194,
+            },
+
+            targetType = 'ox', -- ox/qb - if on ESX use "ox"
+
+            spawnObjectDistance = 100, -- the distance at which objects spawn for players
+
+            collectibleSettings = { -- settings for collectible objects
+                distance = 5, -- the distance from which it is possible to collect the object
+                key = 38, -- key to collect the object - [default: E]
+                keyLabel = 'E',
+                targetIcon = 'fas fa-hand-holding',
+                animation = {
+                    dict = 'anim@amb@business@coc@coc_unpack_cut@',
+                    clip = 'fullcut_cycle_v1_cokecutter'
+                },
+            },
+        }
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Locales['en'] = {
+            menu = {
+                admin_title = 'Admin Menu',
+                create_object = 'Create Object',
+                create_object_desc = 'Use https://gtahash.ru to search for objects',
+                delete_object = 'Delete Object(s)',
+                delete_object_desc = 'Delete object permanently from the server',
+                edit_objects = 'Edit Objects',
+                edit_objects_desc = 'Find & edit any object created on the server',
+                refresh_data = 'Refresh created objects data',
+            },
+            context = {
+                creator = {
+                    object_name = 'Object Name',
+                    object_name_desc = '"name" value of the object you want to create',
+                    isdoor = 'Is object a door?',
+                    restricted_jobs = 'Restricted Jobs',
+                    restricted_jobs_desc = 'Jobs that can see this object (empty - everyone)',
+                    collision = 'Object Collision',
+                    interaction = 'Interaction',
+                    interaction_desc = 'Adjust the ability of player\'s interaction with the object (empty - no interaction)',
+                    interaction_types = {
+                        target = 'Target',
+                        text_ui = 'Text UI',
+                        text_3d = '3D Text',
+                        marker = 'Marker'
+                    },
+                    frozen = 'Object Frozen?',
+                    collectible = 'Collectible?',
+                    temporary = 'Temporary?',
+                    move_object = {
+                        ('MOUSE - Move  \n'),
+                        ('LEFT & RIGHT - Rotate  \n'),
+                        ('ENTER - Finish  \n'),
+                        ('BACKSPACE - Cancel'),
+                    }
+                },
+                editor = {
+                    change_object = 'Change Object',
+                    change_object_desc = 'Change model of the object that will be created',
+                    move_object = 'Move Object',
+                    move_object_desc = 'Change object\'s coords & rotation',
+                    teleport = 'Teleport To The Object',
+                    settings = 'Settings',
+                    settings_desc = 'Configure some of the settings for this object',
+                    delete_object = 'Delete Object',
+                    delete_object_desc = 'Object will be instantly permanently deleted from the server & database',
+                }
+            },
+            input = {
+                select_object = 'Select Object',
+                select_object_desc = 'Select the object you want to edit',
+                select_objects = 'Select Object(s)',
+            },
+            target = {
+                collect = 'Collect %s and get rewards',
+            },
+            progress = {
+                collecting = 'Collecting Object',
+            },
+            alert = {
+                delete_object = 'Are you sure you want to delete %s?',
+            },
+            commands = {
+                adminmenu = 'Access the objects Admin Menu',
+            },
+            logs = {
+                objects_loaded = 'All objects have been loaded & created',
+                object_created = '**%s** created a new object.\n- ID: **%s**\n- Object Name: **%s**\n- Object Is Door: **%s**\n- Restricted Jobs: **%s**\n- Collision Enabled: **%s**\n- Interaction: **%s**\n- Object Is Frozen: **%s**\n- Object is Collectible: **%s**\n- Object Is Temporary: **%s**\n- Coords: **%s**\n- Heading: **%s**',
+                object_deleted = '**%s** deleted an object.\n- Object ID: **%s**',
+                object_collected = '**%s** collected an object.\n- Object ID: **%s**',
+                object_name_changed = '**%s** changed object name.\n- Object ID: **%s**\n- New Object Name: **%s**.\n- New Object ID: **%s**',
+                object_coords_changed = '**%s** changed object coords.\n- Object ID: **%s**\n- New Coords: **%s**.\n- New Heading: **%s**',
+                object_settings_updated = '**%s** updated object settings.\n- Object ID: **%s**\n- Updated Settings: **%s**',
+                restricted_jobs_update = '**%s** updated object restricted jobs.\n- Object ID: **%s**\n- Updated Restricted Jobs: **%s**',
+            },
+            notify = {
+                object_not_exist = 'The object you tried to create doesn\'t exist',
+                object_created = 'The object "%s" with ID %s has been successfully created',
+                object_deleted = 'The object ID %s has been successfully deleted',
+                object_collected = 'You have successfully collected object %s',
+                data_refreshed = 'Objects data successfully refreshed',
+                teleported = 'Successfully teleported to the object %s',
+                name_changed = 'Name for object ID %s successfully updated. New name: %s, new ID: %s',
+                coords_changed = 'Coords for object ID %s successfully updated',
+                settings_updated = 'Settings for object ID %s successfully updated',
+                restricted_jobs_update = 'Restricted Jobs for object ID %s successfully updated',
+            }
+        }
+        ```
+    </Tabs.Tab>
+</Tabs>
