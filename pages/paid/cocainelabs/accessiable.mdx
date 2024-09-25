@@ -1,3 +1,648 @@
 ---
 title: Accessible code
 ---
+
+import { Tabs } from 'nextra/components'
+
+List of accesiable code for Ownable Cocaine Labs
+
+<Tabs items={['client/editable.lua', 'server/editable.lua', 'shared/main.lua', 'locales/en.lua', 'bridge/qbcore/client.lua', 'bridge/qbcore/server.lua', 'bridge/esx/client.lua', 'bridge/esx/server.lua']}>
+    <Tabs.Tab>
+        ```lua
+        function progressBar(duration, label, animDict, animClip)
+            if lib.progressBar({
+                duration = duration,
+                label = label,
+                useWhileDead = false,
+                canCancel = true,
+                disable = {
+                    car = true,
+                    move = true,
+                    combat = true,
+                },
+                anim = {
+                    dict = animDict,
+                    clip = animClip
+                },
+            }) then 
+                return true
+            else
+                return false
+            end
+        end
+
+        Notification = function (title, description, type)
+            -- types are success and error
+            lib.notify({
+                title = title,
+                description = description,
+                type = type
+            })
+        end
+
+        function SkillCheck()
+            local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 2}, 'easy'}, {'w', 'a', 's', 'd'})
+
+            return success
+        end
+
+        function MiniGame()
+            local gameData = {
+                totalNumbers = 15,
+                seconds = 20,
+                timesToChangeNumbers = 4,
+                amountOfGames = 2,
+                incrementByAmount = 5,
+            }
+            local result = exports['pure-minigames']:numberCounter(gameData)
+
+            return result
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Notification = function (source, title, description, type)
+            TriggerClientEvent('ox_lib:notify', source, {
+                title = title,
+                description = description,
+                type = type
+            })
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Config = {
+            locales = 'en',
+            versionChecking = false,
+                
+            textUIAlign = 'left-center',
+            menuUIAlign = 'top-right',
+
+            drawDistance = 25.0,
+            interactionDistance = 1.5,
+
+            suppliesForBlock = 250, -- amount of supplies for one block of cocaine
+            maxCocaineBlocks = 200, -- max capacity of cocaine block
+            timeForSupplies = 60, -- in minutes
+            cocaineBlockPrice = math.random(500, 1000),
+
+            changeNamePrice = 2500,
+            maxLabPerPlayer = 1,
+
+            commands = {
+                [1] = {
+                    enable = true,
+                    command = 'labs',
+                    permission = 'user.admin',
+                    help = 'Manage Cocaine Labs',
+                },
+            },
+
+            labPosition = {
+                exitCoords = vec4(1088.6670, -3187.6814, -38.9935, 173.8485),
+                laptopCoords = vec3(1087.1533, -3194.2832, -38.9934),
+                proccessCoords = vec4(1100.5909, -3198.8232, -38.9934, 176.3272),
+            },
+
+            cctvProp = 'prop_cctv_cam_01a',
+
+            animations = {
+                proccess = {
+                    time = 15000,
+                    anim = 'mini@repair',
+                    dict = 'fixing_a_ped',
+                },
+                hacking = {
+                    time = 10000,
+                    anim = 'anim@heists@prison_heiststation@cop_reactions',
+                    dict = 'cop_b_idle',
+                },
+            },
+
+            workerPeds = {
+                'mp_f_cocaine_01',
+                'mp_m_cocaine_01',
+            },
+
+            workersAnimation = {
+                dict = 'anim@amb@business@coc@coc_unpack_cut@',
+                anim = 'fullcut_cycle_v1_cokecutter'
+            },
+
+            securityPeds = {
+                's_m_m_highsec_01',
+                's_m_m_highsec_02',
+                's_m_m_movprem_01',
+                's_m_m_armoured_02',
+            },
+
+            securityAnimation = {
+                dict = 'missclothing',
+                anim = 'idle_storeclerk'
+            },
+
+            whitelistedJobs = {
+                'police'
+            },
+
+            upgrades = {
+                ['playerSlot'] = {
+                    [1] = {
+                        label = 'Player Slot 1',
+                        players = 1,
+                    },
+                    [2] = {
+                        label = 'Player Slot 2',
+                        players = 2,
+                        price = 1500,
+                    },
+                    [3] = {
+                        label = 'Player Slot 3',
+                        players = 3,
+                        price = 3000,
+                    },
+                    [4] = {
+                        label = 'Player Slot 5',
+                        players = 5,
+                        price = 5000,
+                    },
+                    [5] = {
+                        label = 'Player Slot 10',
+                        players = 10,
+                        price = 7500,
+                    },
+                },
+                ['workers'] = {
+                    [1] = {
+                        label = 'Workers Level 1',
+                        coords = vec4(1090.3329, -3194.9297, -38.9934, 173.8444),
+                        amount = { min = 50, max = 100 },
+                    },
+                    [2] = {
+                        label = 'Workers Level 2',
+                        coords = vec4(1090.2860, -3196.5632, -38.9934, 1.7713),
+                        price = 500,
+                        amount = { min = 100, max = 150 },
+                    },
+                    [3] = {
+                        label = 'Workers Level 3',
+                        coords = vec4(1093.0297, -3194.9309, -38.9934, 173.1970),
+                        price = 1000,
+                        amount = { min = 150, max = 200 },
+                    },
+                    [4] = {
+                        label = 'Workers Level 4',
+                        coords = vec4(1092.9294, -3196.5701, -38.9934, 355.2273),
+                        price = 1500,
+                        amount = { min = 200, max = 250 },
+                    },
+                    [5] = {
+                        label = 'Workers Level 5',
+                        coords = vec4(1095.4424, -3194.9021, -38.9934, 178.7726),
+                        price = 2000,
+                        amount = { min = 300, max = 350 },
+                    },
+                    [6] = {
+                        label = 'Workers Level 6',
+                        coords = vec4(1095.3395, -3196.5598, -38.9934, 350.8661),
+                        price = 2500,
+                        amount = { min = 400, max = 450 },
+                    },
+                    [7] = {
+                        label = 'Workers Level 7',
+                        coords = vec4(1099.6055, -3194.2439, -38.9934, 87.8458),
+                        price = 3000,
+                        amount = { min = 500, max = 550 },
+                    },
+                    [8] = {
+                        label = 'Workers Level 8',
+                        coords = vec4(1101.8270, -3193.6729, -38.9934, 358.8464),
+                        price = 3500,
+                        amount = { min = 600, max = 650 },
+                    },
+                },
+                ['security'] = {
+                    [1] = {
+                        label = 'Guards Level 1',
+                        coords = vec4(1090.4120, -3190.9260, -38.9935, 35.5183),
+                    },
+                    [2] = {
+                        label = 'Guards Level 2',
+                        coords = vec4(1087.3292, -3190.8938, -38.9935, 330.6691),
+                        price = 1000,
+                    },
+                    [3] = {
+                        label = 'Guards Level 3',
+                        coords = vec4(1087.5425, -3199.5457, -38.9918, 341.0070),
+                        price = 2000,
+                    },
+                },
+                ['securityWeapon'] = {
+                    [1] = {
+                        label = 'Pistol',
+                        weapon = 'weapon_pistol',
+                    },
+                    [2] = {
+                        label = 'Carbine Rifle',
+                        weapon = 'weapon_carbinerifle',
+                        price = 5000,
+                    },
+                    [3] = {
+                        label = 'Special Carbine',
+                        weapon = 'weapon_specialcarbine',
+                        price = 7500,
+                    },
+                },
+                ['stock'] = {
+                    [1] = {
+                        label = 'Stock Level 1',
+                        stock = 250,
+                    },
+                    [2] = {
+                        label = 'Stock Level 2',
+                        stock = 500,
+                        price = 1000,
+                    },
+                    [3] = {
+                        label = 'Stock Level 2',
+                        stock = 1500,
+                        price = 3000,
+                    },
+                    [4] = {
+                        label = 'Stock Level 4',
+                        stock = 2500,
+                        price = 5000,
+                    },
+                    [5] = {
+                        label = 'Stock Level 5',
+                        stock = 5000,
+                        price = 10000,
+                    },
+                },
+            }
+        }
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        Translate['en'] = {
+            menu = {
+                admin_menu = 'Labs Admin Menu',
+                edit_labs = 'Edit Labs',
+                refresh_data = 'Refresh Data',
+            },
+            context = {
+                create_lab = 'Create Lab',
+                lab_name = 'Lab Name',
+                lab_price = 'Price',
+                player_workers_level = 'Player Workers Level',
+                workers_level = 'Workers Level',
+                security_level = 'Security Level',
+                security_level_desc = 'Improve the security system on your laptop \nCurrent Level is: %s',
+                security_weapon_Level = 'Security Weapon Level',
+                security_weapon_Level_desc = 'Upgrade weapons for your security in the lab \nCurrent Level is: %s',
+                stock_level = 'Stock Level',
+                select_owner = 'Select Owner',
+                enable_blip = 'Enable Blip',
+                enable_blip_desc = 'Turn on the blip on the maps',
+                disable_blip = 'Disable Blip',
+                disable_blip_desc = 'Turn off the blip from the map',
+                change_name = 'Change Name',
+                change_name_desc = 'Change the name of this lab',
+                change_name_price = 'Change the name of this cocaine lab for $%s',
+                enter_new_name = 'New Name',
+                manage_blip = 'Manage Blip',
+                manage_blip_desc = 'I\'m editing a blip on the map of this lab',
+                change_price = 'Change Price',
+                change_price_desc = 'Change the purchase price of this lab',
+                select_level = 'Select Level',
+                change_coords = 'Change Entrance Coords',
+                change_coords_desc = 'Change the coordinates of the entrance of the lab',
+                move_camera = 'Move Camera',
+                move_camera_desc = 'Move the CCTV camera to another position',
+                manage_slots = 'Manage Slots',
+                manage_slots_desc = 'Change level of player slots',
+                manage_security = 'Manage Security',
+                manage_security_desc = 'Change lab security level',
+                manage_security_weapon = 'Manage Security Weapon',
+                manage_security_weapon_desc = 'Change lab security weapon level',
+                manage_workers = 'Manage Workers',
+                manage_workers_desc = 'Change lab workers level',
+                manage_supplies = 'Manage Supplies',
+                manage_supplies_desc = 'Change lab supplies level',
+                manage_ownership = 'Manage Ownership',
+                manage_ownership_desc = 'Change or remove the owner of the lab',
+                manage_access = 'Manage Access',
+                manage_access_desc = 'Change access to players in the lab',
+                manage_access_desc_2 = 'Add or remove a player from the whitelist',
+                delete_lab = 'Delete Lab',
+                delete_lab_desC = 'Delete cocaine lab from the database',
+                edit_lab = 'Edit this lab',
+                labs_list = 'Labs List',
+                laptop = 'Laptop',
+                sell_blocks = 'Sell Cocaine Blocks',
+                sell_blocks_amount = 'Sell cocaine blocks \nYou currently have %s/%s blocks',
+                supplies = 'Supplies',
+                supplies_desc = 'Supplies are used to make blocks of cocaine \nYou currently have %s/%s supplies',
+                cctv_camera = 'CCTV Camera',
+                cctv_camera_desc = 'Check the camera at the lab entrance',
+                player_slots = 'Player Slots',
+                player_slots_desc = 'Increase the amount of players that can work for you \nCurrent Level is: %s',
+                upgrade_level = 'Upgrade Level',
+                upgrade_level_desc = 'Advance the level and achieve greater player capacity \n Current players: %s/%s',
+                select_player = 'Select Player',
+                workers_level = 'Workers Level',
+                workers_level_desc = 'Advance the number of workers for your lab \nCurrent Level is: %s',
+                supplies_level = 'Supplies Level',
+                supplies_level_desc = 'Upgrade supplies stock for your lab \nCurrent Level is: %s',
+                sell_lab = 'Sell Lab',
+                sell_lab_desc = 'Sell the lab for $%s',
+            },
+            input = {
+                blip_settings = 'Blip Settings',
+                blip_id = 'Blip ID',
+                blip_color = 'Blip Color',
+                blip_scale = 'Blip Scale',
+                blip_display = 'Blip Display',
+                by_online = 'By Online',
+                by_offline = 'By Offline',
+                remove_ownership = 'Remove Ownership',
+                select_action = 'Select Action',
+                manage_ownership_online = 'Manage Ownership (Online)',
+                manage_ownership_offline = 'Manage Ownership (Offline)',
+                select_new_owner = 'Select New Owner',
+                input_identifier = 'Input Identifier',
+                change_block_amount = 'Change Cocaine Blocks Amount',
+                change_block_amount_desc = 'Change amount of cocaine blocks',
+                select_amount = 'Select Amount',
+                change_supplies_amount = 'Change Supplies Amount',
+                change_supplies_amount_desc = 'Change amount of lab supplies',
+                delete_labs = 'Delete Lab(s)',
+                delete_labs_desc = 'Select Lab(s)',
+            },
+            alert = {
+                confirmation = 'Confirmation',
+                turn_off_blip = 'Are you sure you want to turn off the blip?',
+                remove_owner = 'Are you sure you want to remove the owner of this lab?',
+                delete_lab = 'Are you sure you want to delete the cocaine lab **%s**',
+                confirm_sell = 'Are you sure you want to sell **%sx** blocks of coke for $%s',
+                buy_slots = 'Are you sure you want to buy Player Slots Level %s? \nPrice **$%s**',
+                buy_workers_level = 'Are you sure you want to buy Workers Level %s? \nPrice **$%s**',
+                buy_security_level = 'Are you sure you want to buy Security Level %s? \nPrice **$%s**',
+                buy_sec_level_weapon = 'Are you sure you want to buy Security Weapon Level %s? \nPrice **$%s**',
+                buy_supplies_level = 'Are you sure you want to buy Supplies Level %s? \nPrice **$%s**',
+                sell_lab = 'Are you sure you want to sell cocaine lab.  \nIf you sell this lab everything goes back to default settings.  \nPrice: **$%s**',
+                buy_lab = 'Are you sure you want to buy cocaine lab **$%s**?  \nPrice: **$%s**',
+            },
+            text_ui = {
+                enter_location = {
+                    ('ENTER - Place enter location  \n'),
+                    ('BACKSPACE - Cancel'),
+                },
+                move = {
+                    ('↑ & ↓ - Move Forward or Back  \n'),
+                    ('← & → - Move Right & Left  \n'),
+                    ('Q & Z - Move Up or Down  \n'),
+                    ('[ & ] - Rotate Right & Left  \n'),
+                    ('ENTER - Finish  \n'),
+                    ('BACKSPACE - Cancel'),
+                },
+                move_2 = {
+                    ('ARROW UP - Move camera up  \n'),
+                    ('ARROW DOWN - Move camera down  \n'),
+                    ('ARROW LEFT - Move camera left  \n'),
+                    ('ARROW RIGHT - Move camera right  \n'),
+                    ('SCROLL UP - Zoom in  \n'),
+                    ('SCROLL DOWN - Zoom out  \n'),
+                    ('BACKSPACE - Close'),
+                },
+                lab_menu = 'Lab Menu',
+                raid_lab = 'Raid Lab',
+                exit_lab = 'Exit Lab',
+                access_laptop = 'Access Laptop',
+                hack_laptop = 'Hack Laptop',
+                process_supplies = 'Process Supplies'
+            },
+            notify = {
+                failed_hack = 'You failed to hack the laptop',
+                not_enough_supplies = 'You don\'t have enough supplies',
+                failed_lockpick = 'You failed lockpicking the cocaine lab lock',
+                created_lab = 'You have successfully created a lab named %s',
+                name_taken = 'Lab name already taken',
+                purchased_lab = 'You have successfully purchased cocaine lab %s for $%s',
+                not_enough_money = 'You don\'t have enough money',
+                exceeded_limit = 'You cannot buy a lab because you have exceeded the limit of %s',
+                sold_cocaine_lab = 'You have successfully sold cocaine lab %s for $%s', 
+                security_weapon_Level_bought = 'You have successfully purchased Security Weapon Level %s for $%s',
+                security_Level_bought = 'You have successfully purchased Security Level %s for $%s',
+                workers_Level_bought = 'You have successfully purchased Workers Level %s for $%s',
+                pslots_Level_bought = 'You have successfully purchased Player Slots Level %s for $%s',
+                supplies_Level_bought = 'You have successfully purchased Supplies Level %s for $%s',
+                changed_access_list = 'You have successfully updated players access list',
+                lab_name_change = 'You have successfully changed lab name to %s',
+                crafted_cocaine = 'You have successfully crafted 1 cocaine block',
+                sold_blocks = 'You have successfully sold %sx blocks of cocaine for $%s',
+                not_enough_blocks = 'You don\'t have enough blocks of cocaine to sell',
+                preparing_data_refresh = 'Preparing for a data refresh',
+                data_refreshed = 'Data refresh completed successfully',
+                labs_deleted = 'You have successfully deleted the lab(s) you selected',
+                deleted_lab = 'You have successfully deleted the lab %s',
+                changed_block_amount = 'You have successfully changed the amount of cocaine blocks to %s',
+                changed_supplies_amount = 'You have successfully changed the amount of supplies to %s',
+                changed_owner = 'You have successfully changed lab\'s owner',
+                changed_supplies_level = 'You have successfully changed supplies level to %s',
+                changed_workers_level = 'You have successfully changed workers level to %s',
+                changed_seC_wea_level = 'You have successfully changed security weapon level to %s',
+                changed_seC_level = 'You have successfully changed security level to %s',
+                changed_pslots_level = 'You have successfully changed player slots level to %s',
+                changed_camera_pos = 'You have successfully changed camera position',
+                changed_entrance_point = 'You have successfully changed lab\'s entrance point',
+                changed_lab_price = 'You have successfully changed lab price to $%s',
+                managed_blip = 'You have successfully configured lab\'s blip',
+                disable_blip = 'You have successfully disabled lab\'s blip',
+                enable_blip = 'You have successfully enabled lab\'s blip',
+                success_raid = 'You have successfully raided lab %s and stole %sx blocks of cocaine and %sx supplies',
+            },
+            progress = {
+                proccessing_block = 'Proccessing Cocaine Block',
+                hacking_laptop = 'Hacking Laptop',
+            }
+        }
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+            if not IsQBCore() then return end
+
+            local QBCore = exports['qb-core']:GetCoreObject()
+
+            AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+                PlayerData = QBCore.Functions.GetPlayerData()
+                PlayerLoaded = true
+                SetUpLabs()
+            end)
+
+            RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+                table.wipe(PlayerData)
+                PlayerLoaded = false
+            end)
+
+            RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
+                PlayerData = val
+            end)
+
+            AddEventHandler('onResourceStart', function(resource)
+                if cache.resource == resource then
+                    Wait(1500)
+                    PlayerData = QBCore.Functions.GetPlayerData()
+                    PlayerLoaded = true
+                    SetUpLabs()
+                end
+            end)
+
+            function GetIdentifier()
+                return PlayerData.citizenid
+            end
+
+            function GetJob()
+                return PlayerData.job.name
+            end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        if not IsQBCore() then return end
+
+        local QBCore = exports['qb-core']:GetCoreObject()
+
+        function GetPlayerBySource(source)
+            return QBCore.Functions.GetPlayer(source)
+        end
+
+        function GetPlayerSource(Player)
+            return Player.PlayerData.source
+        end
+
+        function GetPlayerByIdentifier(id)
+            return QBCore.Functions.GetPlayerByCitizenId(id)
+        end
+
+        function GetAllPlayers()
+            return QBCore.Functions.GetQBPlayers()
+        end
+
+        function GetPlayerCharName(Player)
+            return Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+        end
+
+        function GetIdentifierByPlayerData(Player)
+            return Player.PlayerData.citizenid    
+        end
+
+        function GetMoney(Player)
+            return Player.Functions.GetMoney('cash')
+        end
+
+        function AddMoney(Player, amount)
+            return Player.Functions.AddMoney('cash', amount)
+        end
+
+        function RemoveMoney(Player, amount)
+            return Player.Functions.RemoveMoney('cash', amount)
+        end
+     ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+        if not IsESX() then return end
+
+        local ESX = exports['es_extended']:getSharedObject()
+
+        RegisterNetEvent('esx:playerLoaded')
+        AddEventHandler('esx:playerLoaded', function(xPlayer)
+            PlayerData = xPlayer
+            PlayerLoaded = true
+            SetUpLabs()
+        end)
+
+        RegisterNetEvent('esx:onPlayerLogout', function()
+            table.wipe(PlayerData)
+            PlayerLoaded = false
+        end)
+
+        RegisterNetEvent('esx:setJob')
+        AddEventHandler('esx:setJob', function(job)
+            PlayerData.job = job
+        end)
+
+        AddEventHandler('onResourceStart', function(resource)
+            if cache.resource == resource then
+                Wait(1500)
+                PlayerData = ESX.GetPlayerData()
+                PlayerLoaded = true
+                SetUpLabs()
+            end
+        end)
+
+        function GetIdentifier()
+            return PlayerData.identifier
+        end
+
+        function GetJob()
+            return PlayerData.job.name
+        end
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        ```lua
+            if not IsESX() then return end
+
+            local ESX = exports['es_extended']:getSharedObject()
+
+            function GetPlayerBySource(source)
+                return ESX.GetPlayerFromId(source)
+            end
+
+            function GetPlayerSource(Player)
+                return Player.source
+            end
+
+            function GetPlayerByIdentifier(id)
+                return ESX.GetPlayerFromIdentifier(id)
+            end
+
+            function GetAllPlayers()
+                return ESX.GetExtendedPlayers()
+            end
+
+            function GetPlayerCharName(Player)
+                return Player.name
+            end
+
+            function GetIdentifierByPlayerData(Player)
+                return Player.identifier
+            end
+
+            function GetMoney(Player)
+                return Player.getMoney()
+            end
+
+            function AddMoney(Player, amount)
+                return Player.addMoney(amount)
+            end
+
+            function RemoveMoney(Player, amount)
+                return Player.removeMoney(amount)
+            end
+        ```
+    </Tabs.Tab>
+</Tabs>
