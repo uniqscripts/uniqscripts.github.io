@@ -604,45 +604,45 @@ List of accesiable code for Ownable Cocaine Labs
 
     <Tabs.Tab>
         ```lua
-            if not IsESX() then return end
+        if not IsESX() then return end
 
-            local ESX = exports['es_extended']:getSharedObject()
+        local ESX = exports['es_extended']:getSharedObject()
 
-            function GetPlayerBySource(source)
-                return ESX.GetPlayerFromId(source)
-            end
+        function GetPlayerBySource(source)
+            return ESX.GetPlayerFromId(source)
+        end
 
-            function GetPlayerSource(Player)
-                return Player.source
-            end
+        function GetPlayerSource(Player)
+            return Player.source
+        end
 
-            function GetPlayerByIdentifier(id)
-                return ESX.GetPlayerFromIdentifier(id)
-            end
+        function GetPlayerByIdentifier(id)
+            return ESX.GetPlayerFromIdentifier(id)
+        end
 
-            function GetAllPlayers()
-                return ESX.GetExtendedPlayers()
-            end
+        function GetAllPlayers()
+            return ESX.GetExtendedPlayers()
+        end
 
-            function GetPlayerCharName(Player)
-                return Player.name
-            end
+        function GetPlayerCharName(Player)
+            return Player.name
+        end
 
-            function GetIdentifierByPlayerData(Player)
-                return Player.identifier
-            end
+        function GetIdentifierByPlayerData(Player)
+            return Player.identifier
+        end
 
-            function GetMoney(Player)
-                return Player.getMoney()
-            end
+        function GetMoney(Player)
+            return Player.getMoney()
+        end
 
-            function AddMoney(Player, amount)
-                return Player.addMoney(amount)
-            end
+        function AddMoney(Player, amount)
+            return Player.addMoney(amount)
+        end
 
-            function RemoveMoney(Player, amount)
-                return Player.removeMoney(amount)
-            end
+        function RemoveMoney(Player, amount)
+            return Player.removeMoney(amount)
+        end
         ```
     </Tabs.Tab>
 </Tabs>
