@@ -21,7 +21,12 @@ Install the latest stable version of [MariaDB](https://mariadb.com/downloads/com
 The SQL code should install automatically. However, if it doesn't, you can manually run the following code using [HeidiSQL](https://www.heidisql.com/).
 
 ```sql
-  ovdje sql
+CREATE TABLE IF NOT EXISTS `uniq_evidence` (
+  `caseId` varchar(50) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `data` longtext DEFAULT NULL,
+  `time` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```
 
 ### Install Dependecies
