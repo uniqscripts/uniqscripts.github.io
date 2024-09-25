@@ -20,7 +20,7 @@ Install the latest stable version of [MariaDB](https://mariadb.com/downloads/com
 </Callout>
 The SQL code should install automatically. However, if it doesn't, you can manually run the following code using [HeidiSQL](https://www.heidisql.com/).
 
-```sql
+```sql copy
 CREATE TABLE IF NOT EXISTS `uniq_evidence` (
   `caseId` varchar(50) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
@@ -34,8 +34,246 @@ Download and install the following dependencies:
 - [oxmysql](https://github.com/overextended/oxmysql)
 - [ox_lib](https://github.com/overextended/ox_lib)
 - up-to-date [server artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/)
- 
+
 Download dependencies and add them to your `resources` folder.
+
+### Adding Items
+<Tabs items={['ox_inventory', 'core_inventory (ESX)', 'qb-inv, ps-inv, lj-inv, core_inv', 'qs-inventory', 'codem-inventory']}>
+  <Tabs.Tab>
+    In `ox_inventory/data/items.lua` add following:
+
+    ```lua copy
+    ['empty_evidence_bag'] = {
+        label = 'Empty Evidence Bag',
+        stack = true,
+        close = false,
+        weight = 50
+    },
+
+    ['bullet_shell_evidence'] = {
+        label = 'Bullet Shell Evidence',
+        stack = false,
+        close = false,
+        weight = 50
+    },
+
+    ['bullet_evidence'] = {
+        label = 'Bullet Evidence',
+        stack = false,
+        close = false,
+        weight = 50
+    },
+
+    ['blood_evidence'] = {
+        label = 'Blood Evidence',
+        stack = false,
+        close = false,
+        weight = 50
+    },
+
+    ['uv_flashlight'] = {
+        label = 'UV Flashlight',
+        stack = false,
+        close = true,
+        weight = 850
+    },
+
+    ['vehicle_prints_evidence'] = {
+        label = 'Vehicle Fingerprints Evidnece',
+        stack = false,
+        close = false,
+        weight = 50
+    },
+
+    ['tweezers'] = {
+        label = 'Tweezers',
+        stack = true,
+        close = true,
+        weight = 15
+    },
+
+    ['cleaning_kit'] = {
+      label = 'Cleaning Kit',
+      stack = true,
+      close = true,
+      weight = 450
+    },
+
+    ['cleaning_shells'] = {
+      label = 'Cleaning Kit',
+      stack = true,
+      close = true,
+      weight = 450
+    },
+    ```
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    Execute following SQL:
+
+    ```sql copy
+    INSERT INTO `items` (`name`, `label`, `weight`, `rare`, `can_remove`, `x`, `y`, `category`, `componentTint`, `componentHash`, `backpackModel`, `backgroundTexture`, `description`) VALUES
+      ('empty_evidence_bag', 'Empty Evidence Bag', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('bullet_shell_evidence', 'Bullet Shell Evidence', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('bullet_evidence', 'Bullet Evidence', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('blood_evidence', 'Blood Evidence', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('uv_flashlight', 'UV Flashlight', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('tweezers', 'Tweezers', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('vehicle_prints_evidence', 'Vehicle Fingerprints Evidnece', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('cleaning_kit', 'Cleaning Kit', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, ''),
+      ('cleaning_shells', 'Cleaning Kit', 1, 0, 1, 1, 1, 'misc', NULL, NULL, NULL, NULL, '');
+    ```
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In `qb-core/shared/items.lua` add following:
+
+    ```lua copy
+    empty_evidence_bag           = { name = 'empty_evidence_bag', label = 'Empty Evidence Bag', weight = 0, type = 'item', image = 'empty_evidence_bag.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    bullet_shell_evidence        = { name = 'bullet_shell_evidence', label = 'Bullet Shell Evidence', weight = 0, type = 'item', image = 'bullet_shell_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    bullet_evidence              = { name = 'bullet_evidence', label = 'Bullet Evidence', weight = 0, type = 'item', image = 'bullet_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    blood_evidence               = { name = 'blood_evidence', label = 'Blood Evidence', weight = 0, type = 'item', image = 'blood_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    uv_flashlight                = { name = 'uv_flashlight', label = 'UV Flashlight', weight = 0, type = 'item', image = 'uv_flashlight.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    tweezers                     = { name = 'tweezers', label = 'Tweezers', weight = 0, type = 'item', image = 'tweezers.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    vehicle_prints_evidence      = { name = 'vehicle_prints_evidence', label = 'Vehicle Fingerprints Evidnece', weight = 0, type = 'item', image = 'vehicle_prints_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    cleaning_kit                 = { name = 'cleaning_kit', label = 'Cleaning Kit', weight = 450, type = 'item', image = 'cleaning_kit.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    cleaning_shells              = { name = 'cleaning_shells', label = 'Cleaning Kit', weight = 450, type = 'item', image = 'cleaning_shells.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    ```
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In `qs-inventory/shared/items.lua` add following:
+
+    ```lua copy
+    ['empty_evidence_bag']           = {
+      ['name'] = 'empty_evidence_bag',
+      ['label'] = 'Empty Evidence Bag',
+      ['weight'] = 0,
+      ['type'] = 'item',
+      ['image'] = 'empty_evidence_bag.png',
+      ['unique'] = false,
+      ['useable'] = false,
+      ['shouldClose'] = false,
+      ['combinable'] = nil,
+      ['description'] = 'Used a lot to keep DNA from blood, bullet shells and more'
+    },
+    ['bullet_shell_evidence']           = {
+        ['name'] = 'bullet_shell_evidence',
+        ['label'] = 'Bullet Shell Evidence',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'bullet_shell_evidence.png',
+        ['unique'] = false,
+        ['useable'] = true,
+        ['shouldClose'] = false,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ['bullet_evidence']           = {
+        ['name'] = 'bullet_evidence',
+        ['label'] = 'Bullet Evidence',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'bullet_evidence.png',
+        ['unique'] = true,
+        ['useable'] = false,
+        ['shouldClose'] = false,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ['blood_evidence']           = {
+        ['name'] = 'blood_evidence',
+        ['label'] = 'Blood Evidence',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'blood_evidence.png',
+        ['unique'] = true,
+        ['useable'] = false,
+        ['shouldClose'] = false,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ['uv_flashlight']           = {
+        ['name'] = 'uv_flashlight',
+        ['label'] = 'UV Flashlight',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'uv_flashlight.png',
+        ['unique'] = false,
+        ['useable'] = true,
+        ['shouldClose'] = true,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ['tweezers']           = {
+        ['name'] = 'tweezers',
+        ['label'] = 'Tweezers',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'tweezers.png',
+        ['unique'] = false,
+        ['useable'] = true,
+        ['shouldClose'] = true,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ['vehicle_prints_evidence']           = {
+        ['name'] = 'vehicle_prints_evidence',
+        ['label'] = 'Vehicle Fingerprints Evidnece',
+        ['weight'] = 0,
+        ['type'] = 'item',
+        ['image'] = 'vehicle_prints_evidence.png',
+        ['unique'] = true,
+        ['useable'] = false,
+        ['shouldClose'] = false,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+
+    ['cleaning_kit']           = {
+        ['name'] = 'cleaning_kit',
+        ['label'] = 'Cleaning Kit',
+        ['weight'] = 450,
+        ['type'] = 'item',
+        ['image'] = 'cleaning_kit.png',
+        ['unique'] = false,
+        ['useable'] = true,
+        ['shouldClose'] = true,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+
+    ['cleaning_shells']           = {
+        ['name'] = 'cleaning_shells',
+        ['label'] = 'Cleaning Kit',
+        ['weight'] = 450,
+        ['type'] = 'item',
+        ['image'] = 'cleaning_shells.png',
+        ['unique'] = false,
+        ['useable'] = true,
+        ['shouldClose'] = true,
+        ['combinable'] = nil,
+        ['description'] = ''
+    },
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In `codem-inventory/config/itemlist.lua` add following:
+
+    ```lua copy
+    empty_evidence_bag           = { name = 'empty_evidence_bag', label = 'Empty Evidence Bag', weight = 0, type = 'item', image = 'empty_evidence_bag.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    bullet_shell_evidence        = { name = 'bullet_shell_evidence', label = 'Bullet Shell Evidence', weight = 0, type = 'item', image = 'bullet_shell_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    bullet_evidence              = { name = 'bullet_evidence', label = 'Bullet Evidence', weight = 0, type = 'item', image = 'bullet_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    blood_evidence               = { name = 'blood_evidence', label = 'Blood Evidence', weight = 0, type = 'item', image = 'blood_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    uv_flashlight                = { name = 'uv_flashlight', label = 'UV Flashlight', weight = 0, type = 'item', image = 'uv_flashlight.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    tweezers                     = { name = 'tweezers', label = 'Tweezers', weight = 0, type = 'item', image = 'tweezers.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    vehicle_prints_evidence      = { name = 'vehicle_prints_evidence', label = 'Vehicle Fingerprints Evidnece', weight = 0, type = 'item', image = 'vehicle_prints_evidence.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = '' },
+    cleaning_kit                 = { name = 'cleaning_kit', label = 'Cleaning Kit', weight = 450, type = 'item', image = 'cleaning_kit.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    cleaning_shells              = { name = 'cleaning_shells', label = 'Cleaning Kit', weight = 450, type = 'item', image = 'cleaning_shells.png', unique = false, useable = true, shouldClose = true, combinable = nil, description = '' },
+    ```
+  </Tabs.Tab>
+</Tabs>
+
 ### Add to server.cfg
 Find your `resources` folder, inside create a new folder named `[uniq]` if one doesn’t already exist, move the asset from [Keymaster](https://keymaster.fivem.net/login?return_url=/assets) into `[uniq]`, and add `ensure [uniq]` at the end of your `server.cfg` file. Make sure that all dependencies listed above are started before our asset.
 </Steps>
