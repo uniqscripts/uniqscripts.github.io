@@ -1,0 +1,36 @@
+---
+title: Installation
+---
+
+import { Steps, FileTree, Tabs, Callout } from 'nextra/components'
+
+Installation guide for Object Creator
+
+
+<Steps>
+### Install MariaDB
+<Callout type="warning" emoji="⚠️">
+  Do not use XAMPP
+</Callout>
+Install the latest stable version of [MariaDB](https://mariadb.com/downloads/community/), if you don't have it already.
+ 
+### SQL file
+<Callout type="warning" emoji="⚠️">
+  Do not use phpMyAdmin
+</Callout>
+The SQL code should install automatically. However, if it doesn't, you can manually run the following code using [HeidiSQL](https://www.heidisql.com/).
+
+```sql copy
+  ovdje sql
+```
+
+### Install Dependecies
+Download and install the following dependencies:
+- [oxmysql](https://github.com/overextended/oxmysql)
+- [ox_lib](https://github.com/overextended/ox_lib)
+- up-to-date [server artifacts](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/)
+ 
+Download dependencies and add them to your `resources` folder.
+### Add to server.cfg
+Find your `resources` folder, inside create a new folder named `[uniq]` if one doesn’t already exist, move the asset from [Keymaster](https://keymaster.fivem.net/login?return_url=/assets) into `[uniq]`, and add `ensure [uniq]` at the end of your `server.cfg` file. Make sure that all dependencies listed above are started before our asset.
+</Steps>
