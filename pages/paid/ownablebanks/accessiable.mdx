@@ -1,3 +1,469 @@
 ---
 title: Accessible code
 ---
+
+
+import { Tabs } from 'nextra/components'
+ 
+<Tabs items={['shared/main.lua', 'utils/client/main.lua', 'utils/server/main.lua', 'locales/en.lua']}>
+    <Tabs.Tab>
+        ```lua
+        Config = {
+            locale = 'en',
+            versionCheck = true,
+
+            alignMenu = 'top-right',
+            alignTextUI = 'right-center',
+
+            useTarget = false,
+            targetType = 'ox', -- ox, qb
+            targetDistance = 2.0,
+
+            commands = {
+                {
+                    name = 'banks',
+                    permission = 'group.admin',
+                    help = 'Bank Menu (Create Bank, Delete Bank, Edit Banks, Refresh Data)'
+                }
+            },
+
+            whitelistedSocieties = {
+                'police', 'ambulance'
+            },
+
+            addressSheme = 'xxx-xxx-xxx',
+            maintenancePayDays = 7,
+
+            maxPersonalAccountPerBank = 2,
+            maxSocietyAccountPerBank = 1,
+            maxOwnedBanks = 2,
+
+            changenamePrice = 5000,
+
+            maxTaxValue = 50,
+
+            personalAccountIconColor = 'lightblue',
+            societyAccountIconColor = 'green',
+
+            drawPoint = 10.0,
+            intaractionDistance = 1.0,
+
+            markers = {
+                bank = {
+                    id = 29,
+                    color = { r = 27, g = 111, b = 226, a = 100 },
+                    rotating = true,
+                    jumping = false,
+                    size = vec3(0.25, 0.25, 0.25),
+                    rotate = vec3(0.0, 0.0, 0.0)
+                },
+                boss = {
+                    id = 20,
+                    color = { r = 27, g = 111, b = 226, a = 100 },
+                    rotating = true,
+                    jumping = false,
+                    size = vec3(0.25, 0.25, 0.25),
+                    rotate = vec3(0.0, 0.0, 0.0)
+                },
+            },
+
+            atmBlip = {
+                enable = true,
+                id = 108,
+                color = 2,
+                scale = 0.5,
+                display = 4
+            },
+
+            atms = {
+                { price = 5000, coords = vec3(-386.733, 6045.953, 31.501) },
+                { price = 2500, coords = vec3(-284.037, 6224.385, 31.187) },
+                { price = 2500, coords = vec3(-135.165, 6365.738, 31.101) },
+                { price = 2500, coords = vec3(-94.9690, 6455.301, 31.784) },
+                { price = 2500, coords = vec3(155.4300, 6641.991, 31.784) },
+                { price = 2500, coords = vec3(174.6720, 6637.218, 31.784) },
+                { price = 2500, coords = vec3(1703.138, 6426.783, 32.730) },
+                { price = 2500, coords = vec3(1735.114, 6411.035, 35.164) },
+                { price = 2500, coords = vec3(1702.842, 4933.593, 42.051) },
+                { price = 2500, coords = vec3(1967.333, 3744.293, 32.272) },
+                { price = 2500, coords = vec3(1821.917, 3683.483, 34.244) },
+                { price = 2500, coords = vec3(540.0420, 2671.007, 42.177) },
+                { price = 2500, coords = vec3(2564.399, 2585.100, 38.016) },
+                { price = 2500, coords = vec3(2558.683, 349.6010, 108.050) },
+                { price = 2500, coords = vec3(2558.051, 389.4817, 108.660) },
+                { price = 2500, coords = vec3(1077.692, -775.796, 58.218) },
+                { price = 2500, coords = vec3(1139.018, -469.886, 66.789) },
+                { price = 2500, coords = vec3(1168.975, -457.241, 66.641) },
+                { price = 2500, coords = vec3(1153.884, -326.540, 69.245) },
+                { price = 2500, coords = vec3(381.2827, 323.2518, 103.270) },
+                { price = 2500, coords = vec3(236.4638, 217.4718, 106.840) },
+                { price = 2500, coords = vec3(265.0043, 212.1717, 106.780) },
+                { price = 2500, coords = vec3(285.2029, 143.5690, 104.970) },
+                { price = 2500, coords = vec3(157.7698, 233.5450, 106.450) },
+                { price = 2500, coords = vec3(-164.568, 233.5066, 94.919) },
+                { price = 2500, coords = vec3(-1827.04, 785.5159, 138.020) },
+                { price = 2500, coords = vec3(-1409.39, -99.2603, 52.473) },
+                { price = 2500, coords = vec3(-1205.35, -325.579, 37.870) },
+                { price = 2500, coords = vec3(-2072.41, -316.959, 13.345) },
+                { price = 2500, coords = vec3(-2975.72, 379.7737, 14.992) },
+                { price = 2500, coords = vec3(-2955.70, 488.7218, 15.486) },
+                { price = 2500, coords = vec3(-3044.22, 595.2429, 7.595) },
+                { price = 2500, coords = vec3(-3144.13, 1127.415, 20.868) },
+                { price = 2500, coords = vec3(-3241.10, 996.6881, 12.500) },
+                { price = 2500, coords = vec3(-3241.11, 1009.152, 12.877) },
+                { price = 2500, coords = vec3(-1305.40, -706.240, 25.352) },
+                { price = 2500, coords = vec3(-538.225, -854.423, 29.234) },
+                { price = 2500, coords = vec3(-711.156, -818.958, 23.768) },
+                { price = 2500, coords = vec3(-717.614, -915.880, 19.268) },
+                { price = 2500, coords = vec3(-526.566, -1222.90, 18.434) },
+                { price = 2500, coords = vec3(-256.831, -719.646, 33.444) },
+                { price = 2500, coords = vec3(-203.548, -861.588, 30.205) },
+                { price = 2500, coords = vec3(112.4102, -776.162, 31.427) },
+                { price = 2500, coords = vec3(112.9290, -818.710, 31.386) },
+                { price = 2500, coords = vec3(119.9000, -883.826, 31.191) },
+                { price = 2500, coords = vec3(-846.304, -340.402, 38.687) },
+                { price = 2500, coords = vec3(-1204.35, -324.391, 37.877) },    
+                { price = 2500, coords = vec3(-56.1935, -1752.53, 29.452) },
+                { price = 2500, coords = vec3(-261.692, -2012.64, 30.121) },
+                { price = 2500, coords = vec3(-273.001, -2025.60, 30.197) },
+                { price = 2500, coords = vec3(24.589, -946.056, 29.357) },
+                { price = 2500, coords = vec3(-254.112, -692.483, 33.616) },
+                { price = 2500, coords = vec3(-1570.197, -546.651, 34.955) },
+                { price = 2500, coords = vec3(-1415.909, -211.825, 46.500) },
+                { price = 2500, coords = vec3(-1430.112, -211.014, 46.500) },
+                { price = 2500, coords = vec3(33.232, -1347.849, 29.497) },
+                { price = 2500, coords = vec3(129.216, -1292.347, 29.269) },
+                { price = 2500, coords = vec3(287.645, -1282.646, 29.659) },
+                { price = 2500, coords = vec3(289.012, -1256.545, 29.440) },
+                { price = 2500, coords = vec3(295.839, -895.640, 29.217) },
+                { price = 2500, coords = vec3(1686.753, 4815.809, 42.008) },
+                { price = 2500, coords = vec3(-302.408, -829.945, 32.417) },
+                { price = 2500, coords = vec3(5.134, -919.949, 29.557) },
+                { price = 2500, coords = vec3(527.26, -160.76, 57.09) },
+                { price = 2500, coords = vec3(-867.19, -186.99, 37.84) },
+                { price = 2500, coords = vec3(-821.62, -1081.88, 11.13) },
+                { price = 2500, coords = vec3(-1315.32, -835.96, 16.96) },
+                { price = 2500, coords = vec3(-660.71, -854.06, 24.48) },
+                { price = 2500, coords = vec3(-1109.73, -1690.81, 4.37) },
+                { price = 2500, coords = vec3(-1091.5, 2708.66, 18.95) },
+                { price = 2500, coords = vec3(1171.98, 2702.55, 38.18) },
+                { price = 2500, coords = vec3(2683.09, 3286.53, 55.24) },
+                { price = 2500, coords = vec3(89.61, 2.37, 68.31) },
+                { price = 2500, coords = vec3(-30.3, -723.76, 44.23) },
+                { price = 2500, coords = vec3(-28.07, -724.61, 44.23) },
+                { price = 2500, coords = vec3(-613.24, -704.84, 31.24) },
+                { price = 2500, coords = vec3(-618.84, -707.9, 30.5) },
+                { price = 2500, coords = vec3(-1289.23, -226.77, 42.45) },
+                { price = 2500, coords = vec3(-1285.6, -224.28, 42.45) },
+                { price = 2500, coords = vec3(-1286.24, -213.39, 42.45) },
+                { price = 2500, coords = vec3(-1282.54, -210.45, 42.45) },
+                { price = 2500, coords = vec3(147.6513, -1035.8063, 29.3430) },
+                { price = 2500, coords = vec3(145.9408, -1035.1638, 29.3449) },
+            },
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Utils = {}
+
+        Utils.Notification = function(title, description, type, duration)
+            lib.notify({
+                title = title,
+                description = description,
+                type = type,
+                duration = duration or 5000
+            })
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Utils = {}
+
+        Utils.Notification = function(src, title, description, type, duration)
+            TriggerClientEvent('ox_lib:notify', src, {
+                title = title,
+                description = description,
+                type = type,
+                duration = duration
+            })
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Locales['en'] = {
+            menu = {
+                banks = {
+                    title = 'Banks Menu',
+                    createbank = 'Create Bank',
+                    deletebank = 'Delete Bank',
+                    editbanks = 'Edit Banks',
+                }
+            },
+
+            context = {
+                atmmenuTitle = 'Accounts',
+                account = 'Account %s',
+                na = 'N/A',
+                personalTitle = 'Personal Accounts',
+                personalDesc = 'Current Balance: $%s\nAccount Address: %s\nThe next payment deadline is: %s\nShare the account with: %s',
+                societyTitle = 'Society Accounts',
+                societyDesc = 'Current Balance: $%s\nAccount Address: %s\nThe next payment deadline is: %s\nSociety Name: %s\nShare the account with: %s',
+                depositMoneyTitle = 'Deposit Money',
+                depositMoneyDesc = 'Click to leave money in your account',
+                depositMoneyInBankDesc = 'Deposit money in your bank',
+                depositMoneyOnAccountDesc = 'Deposit money to the %s account',
+                withdrawMoneyTitle = 'Withdraw Money',
+                withdrawMoneyDesc = 'Click to withdraw money from your account',
+                withdrawMoneyFromBankDesc = 'Withdraw money from your bank',
+                bossmenuTitle = 'Boss Menu',
+                bankInfoTitle = 'Bank Info',
+                bankInfoDesc = 'Check your bank information',
+                changeNameTitle = 'Change Bank Name',
+                changeNamePriceDesc = 'Change the name of the bank for %s$',
+                moneySettingsTitle = 'Money Settings',
+                moneySettingsDesc = 'Manage you money from your bank',
+                manageAccountTitle = 'Manage Accounts',
+                manageAccountDesc = 'List of all accounts in your bank',
+                manageATMSTitle = 'Manage Atms',
+                manageATMSDesc = 'Buy or sell those ATMs',
+                manageAccountsTitle = 'Manage Accounts',
+                extendMaintenanceTitle = 'Extend account maintenance',
+                extendMaintenanceDesc = 'Extend account maintenance',
+                accountHistoryTitle = 'Account History',
+                accountHistoryDesc = 'Click to check account action history',
+                closeAccountTitle = 'Close Account',
+                closeAccountDesc = 'Terminate your account so it can no longer be used',
+                availableATMsTitle = 'Available ATMs',
+                availableATMsDesc = 'Click to buy this atm for %s$',
+                ownedATMTitle = 'Owned ATMs',
+                ATMTitle = 'ATM #%s',
+                ATMDesc = 'Click to sold this atm for %s$',
+                balanceTitle = 'Balance: %s$',
+                createNewAccountTitle = 'Create New Account',
+                bankMenuTitle = '%s Bank',
+                bankMenuDesc = 'Access to many options to help you to modify this bank',
+                transferMoneyTitle = 'Transfer Money',
+                transferMoneyDesc = 'Click to send money to another account',
+                accessSettingsTitle = 'Access Settings',
+                accessSettingsDesc = 'Click to change access to players on your account',
+                transferOwnershipTitle = 'Transfer Ownership',
+                transferOwnershipDesc = 'Click to change the owner of this account',
+                deleteAccountTitle = 'Delete Account',
+                deleteAccountDesc = 'Click to permanently delete this account',
+                copyAccountAddressTitle = 'Copy Account Address',
+                copyAccountAddressDesc = 'Click to copy your address',
+                playersListTitle = 'Players List',
+                noPlayersTitle = 'No Players',
+                playerAccessDesc = 'Click to change access or remove player',
+                changeAccessTitle = 'Change Access',
+                changeAccessDesc = 'Click to change player access',
+                removeAccessTitle = 'Remove Access',
+                removeAccessDesc = 'Click to remove player access',
+                addNewPlayerTitle = 'Add New Player',
+                banksListTitle = 'Banks List',
+                changeAccountSettingsTitle = 'Change Accounts Settings',
+                changeAccountSettingsDesc = 'Turn on/off Permission to create social accounts as well as enable free first account and account maintenance cost',
+                updateBankTaxTitle = 'Update Bank Tax',
+                updateBankTaxDesc = 'Change the bank tax that the bank receives during transactions',
+                updateAtmListTitle = 'Update ATM List',
+                updateAtmListDesc = 'Update the list of ATMs owned by this bank',
+                updateBalanceTitle = 'Update Balance',
+                updateBalanceDesc = 'Change the balance of this bank',
+                changePriceTitle = 'Change Price',
+                changePriceDesc = 'Change the buy price this bank',
+                changeBossMenuLocationTitle = 'Change Boss Location',
+                changeBossMenuLocationDesc = 'Change the location of the boss menu',
+                changeBankLocationTitle = 'Change Bank Location',
+                changeBankLocationDesc = 'Change the location of the bank',
+                enableBlipTitle = 'Enable Blip',
+                enableBlipDesc = 'Turn on the blip on the maps on this bank',
+                disableBlipTitle = 'Disable Blip',
+                disableBlipDesc = 'Turn off the map blip on this bank',
+                changeNameDesc = 'Change the current name of this bank',
+            },
+
+            dialog = {
+                buyBank = {
+                    title = 'Want to buy?',
+                    description = 'Are you sure you want to buy the bank %s for %s $'
+                },
+                bankInfo = {
+                    title = 'Bank Info',
+                    description = {
+                        ('Bank Name: %s  \n'),
+                        ('Bank Balance: %s$  \n'),
+                        ('Owned Atms: %s  \n\n'),
+                        ('Number of Personal Accounts: %s  \n'),
+                        ('Number of Society Accounts: %s  \n\n'),
+                        ('Free Trail Account: %s  \n'),
+                        ('Society Accounts: %s  \n'),
+                        ('Account Maintenance: %s$  \n'),
+                        ('Tax: %s%%'),
+                    }        
+                },
+                openAccount = {
+                    title = 'Do you want to open account for %s'
+                },
+                closeAccount = {
+                    title = 'Are you sure you want to close account %s? With that, the account owner will lose everything he had on the account'
+                },
+                deleteAccount = {
+                    title = 'Are you sure you want to delete the account %s. Therefore, you will lose all money from your account if you delete it.'
+                },
+                buyAtm = {
+                    title = 'Are you sure you want to buy ATM #%s for %s$',
+                },
+                sellAtm = {
+                    title = 'Are you sure you want to sold ATM #%s for %s$',
+                },
+                removeAccess = {
+                    title = 'Are you sure you want to remove account access for player %s',
+                },
+                confirmation = 'Confirmation',
+                yes = 'Yes',
+                no = 'No',
+                free = 'Free'
+            },
+
+            textUI = {
+                placeBankLocation = '[ENTER] - Place Bank Location  \n[BACKSPACE] - Cancel',
+                placeBossLocation = '[ENTER] - Place Boss Menu Location  \n[BACKSPACE] - Cancel',
+                openBank = '[E] - Open Bank Menu',
+                openATM = '[E] - Open ATM',
+                openBoss = '[E] - Open Boss Menu',
+            },
+
+            target = {
+                openBank = 'Open Bank',
+                openBoss = 'Open Boss Menu',
+                openAtm = 'Open ATM',
+            },
+
+            input = {
+                createbank = {
+                    title = 'Create Bank',
+                    bankname_title = 'Bank Name',
+                    bankname_desc = 'Enter the name you want your bank to be called',
+                    bankprice_title = 'Bank Price',
+                    bankprice_desc = 'Enter the bank price at which people will buy',
+                    selectowner_title = 'Select Owner',
+                    selectowner_desc = 'Choose the player you want to give ownership of this bank',
+                    selectbankatm_title = 'Select Atms',
+                    selectbankatm_desc = 'Select the ATMs you want to give to this bank at the beginning.',
+                    selectatm_options_title = 'Atm #%s',
+                    banktax_title = 'Bank Tax',
+                    banktax_desc = 'The fee that the bank will charge for each transaction',
+                    startbalance_title = 'Start Balance',
+                    startbalance_desc = 'The money the bank will receive at the beginning when you create it',
+                    maintenance_title = 'Bank Account Maintenance',
+                    maintenance_desc = 'The amount each player will pay when maintaining an account',
+                    enablesocietyaccounts = 'Enable Society Accounts',
+                    unlimitedmoney = 'Unlimited Money',
+                    enablefreetrielaccount = 'Enable Free Triel Account',
+                    enableblip = 'Enable Bank Blip',
+                },
+                createAccount = {
+                    title = 'Create Account',
+                    accountName = 'Account Name',
+                    selectAccountType = 'Select Account Type',
+                    playerAccess = 'Player Access',
+                },
+                blip = {
+                    title = 'Blip Settings',
+                    blipId = 'Blip ID',
+                    blipScale = 'Blip Scale',
+                    blipColor = 'Blip Color',
+                },
+                changeNameTitle = 'Change Bank Name',
+                enterNewNameTitle = 'Enter New Name',
+                enterAmount = 'Enter Amount',
+                depositMoney = 'Deposit Money on %s',
+                extendMaintenanceTitle = 'Extend account maintenance',
+                playerAccessTitle = '%s Access',
+                selectAccess = 'Select Access',
+                selectPlayer = 'Select Player',
+                enterIdentifier = 'Enter Identifier',
+                selectAction = 'Select Action',
+                transferOwnership = 'Transfer Ownership',
+                transferMoney = 'Transfer Money',
+                enterAddress = 'Enter Address',
+                addAccessTitle = 'Add Access',
+                players = 'Players',
+                deleteBankTitle = 'Delete Bank',
+                selectBank = 'Select Bank',
+                changeAccountSettingsTitle = 'Change Accounts Settings',
+                updateBankTaxTitle = 'Update Bank Tax',
+                updateAtmList = 'Update ATM List',
+                selectAtm = 'Select ATM',
+                selectNewOwner = 'Select New Owner',
+                changeBalanceTitle = 'Change Balance',
+                changePriceTitle = 'Change Price',
+            },
+
+            options = {
+                depositMoney = 'Deposit Money',
+                withdrawMoney = 'Withdraw Money',
+                transferMoney = 'Transfer Money',
+                accountHistory = 'Account History',
+                personal = 'Personal',
+                society = 'Society',
+                onlinePlayer = 'Online Player',
+                offlinePlayer = 'Offline Player',
+                noOwner = 'No Owner',
+            },
+
+            blip = {
+                available_atm = 'Available Atm'
+            },
+
+            notify = {
+                error = {
+                    title = 'Error',
+                    max_bank = 'You cannot buy a bank because you have a maximum number of banks which is %s',
+                    need_openaccount = 'In order to use this ATM, you must first create an account',
+                    invalid_address = 'You must enter a valid address',
+                    same_address = 'You cannot send money to yourself',
+                    max_account = 'You cannot create an account because you have the maximum number of accounts',
+                    account_in_minus = 'You cannot create a new account because one of your accounts is in the minus',
+                    no_money_account = 'You dont have enough money to create an account',
+                    no_money_atm = 'You dont have enough money to buy ATM',
+                },
+                success = {
+                    title = 'Success',
+                    bank_created = 'You have successfully created a %s Bank',
+                    account_created = 'You have successfully created a %s account in %s bank',
+                    deposited_money = 'You have successfully deposited $%s into your bank account',
+                    withdrawn_money = 'You have successfully withdrawn $%s from your bank account',
+                    transfered_money = 'You have successfully transfered $%s on address',
+                    added_access = 'You have successfully added a new player to the access list',
+                    updated_access = 'You have successfully updated the players account access',
+                    transfered_ownership = 'You have successfully transferred ownership to %s',
+                    deleted_account = 'You have successfully deleted the %s account from %s bank',
+                    deleted_bank = 'You have successfully deleted %s bank',
+                    name_changed_price = 'You have successfully changed the name of the bank to %s for $%s',
+                    name_changed = 'You have successfully changed the name of the bank to %s',
+                    bought_atm = 'You have successfully purchased ATM #%s for $%s',
+                    sold_atm = 'You have successfully sold ATM #%s for $%s',
+                    deposited_money_account = 'You have successfully added $%s to your %s account',
+                    extended_account_time = 'You have successfully extended the invoice payment deadline until %s',
+                    closed_account = 'You have successfully closed your %s bank account',
+                    purchased_bank = 'You have successfully purchased a %s Bank for $%s',
+                    disabled_blip = 'You have successfully turned off the blip option',
+                    enabled_blip = 'You have successfully turned on the blip option',
+                    bank_location_changed = 'You have successfully changed your bank location',
+                    boss_location_changed = 'You have successfully changed the boss menu location',
+                    price_changed = 'You have successfully changed the price of the bank to $%s',
+                    balance_changed = 'You have successfully changed your bank balance to $%s',
+                    ownership_transfered = 'You have successfully changed the owner of the bank.',
+                    atm_list_changed = 'You have successfully changed the list of ATMs',
+                    tax_changed = 'You have successfully changed the taka to %s%',
+                    account_settings_changed = 'You have successfully changed your account settings',
+                }
+            }
+        }
+        ```
+    </Tabs.Tab>
+</Tabs>
