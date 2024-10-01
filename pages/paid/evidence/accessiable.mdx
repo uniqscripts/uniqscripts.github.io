@@ -1,3 +1,1330 @@
 ---
 title: Accessible code
 ---
+
+import { Tabs } from 'nextra/components'
+
+
+
+<Tabs items={['bridge/esx/client.lua', 'bridge/esx/server.lua', 'bridge/qb/client.lua', 'bridge/qb/server.lua', 'bridge/framework.lua', 'inventory.lua', 'client/editable.lua', 'server/editable.lua', 'locales/en.lua', 'config/config.lua']}>
+    <Tabs.Tab>
+        ```lua
+        if not IsESX() then return end
+
+        local ESX = exports[Config.FrameworkName]:getSharedObject()
+
+        RegisterNetEvent(Config.PlayerLoadedEvent.esx)
+        AddEventHandler(Config.PlayerLoadedEvent.esx, function(xPlayer)
+            PlayerData = xPlayer
+            PlayerLoaded = true
+
+            Wait(1000)
+
+            LoadEvidence()
+        end)
+
+        RegisterNetEvent('esx:setJob')
+        AddEventHandler('esx:setJob', function(job)
+            PlayerData.job = job
+            lib.hideTextUI()
+        end)
+
+        RegisterNetEvent('esx:onPlayerLogout', function()
+            table.wipe(PlayerData)
+            PlayerLoaded = false
+            RemoveEverything()
+        end)
+
+        function GetJob()
+            return PlayerData.job.name or ''
+        end
+
+        function GetGrade()
+            return PlayerData.job.grade or 0
+        end
+
+        function GetIdentifier()
+            return PlayerData.identifier
+        end
+
+        function GetRPName()
+            return ('%s %s'):format(PlayerData.firstName, PlayerData.lastName)
+        end
+
+        AddEventHandler('onResourceStart', function(resource)
+            if cache.resource == resource then
+                Wait(750)
+
+                PlayerData = ESX.GetPlayerData()
+                PlayerLoaded = true
+            end
+        end)
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        if not IsESX() then return end
+
+        ESX = exports[Config.FrameworkName]:getSharedObject()
+
+        function GetIdentifier(playerId)
+            return ESX.GetPlayerFromId(playerId)?.identifier
+        end
+
+        function GetName(playerId)
+            local xPlayer = ESX.GetPlayerFromId(playerId)
+
+            if xPlayer then
+                return xPlayer.getName()
+            end
+
+            return 'Unknown'
+        end
+
+        function GetDNA(playerId)
+            local xPlayer = ESX.GetPlayerFromId(playerId)
+
+            if xPlayer then
+                return xPlayer.getName()
+            end
+
+            return 'Unknown'
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        if not IsQBCore() then return end
+
+        local QBCore = exports[Config.FrameworkName]:GetCoreObject()
+
+        AddEventHandler(Config.PlayerLoadedEvent.qb, function()
+            PlayerData = QBCore.Functions.GetPlayerData()
+            PlayerLoaded = true
+
+            Wait(1000)
+
+            LoadEvidence()
+        end)
+
+        RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
+            PlayerData = val
+        end)
+
+        RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+            PlayerData.job = JobInfo
+            lib.hideTextUI()
+        end)
+
+        RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+            table.wipe(PlayerData)
+            PlayerLoaded = false
+            RemoveEverything()
+        end)
+
+        function GetJob()
+            return PlayerData.job.name or ''
+        end
+
+        function GetGrade()
+            return PlayerData.job.grade.level or 0
+        end
+
+        function GetIdentifier()
+            return PlayerData.citizenid or ''
+        end
+
+        function GetRPName()
+            return ('%s %s'):format(PlayerData.charinfo.firstname, PlayerData.charinfo.lastname)
+        end
+
+        AddEventHandler('onResourceStart', function(resource)
+            if cache.resource == resource then
+                Wait(500)
+
+                PlayerData = QBCore.Functions.GetPlayerData()
+                PlayerLoaded = true
+            end
+        end)
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        if not IsQBCore() then return end
+
+        QBCore = exports[Config.FrameworkName]:GetCoreObject()
+
+        function GetIdentifier(playerId)
+            return QBCore.Functions.GetPlayer(playerId)?.PlayerData.citizenid or ''
+        end
+
+        function GetName(playerId)
+            local ply = QBCore.Functions.GetPlayer(playerId)
+
+            if ply then
+                return ('%s %s'):format(ply.PlayerData.charinfo.firstname, ply.PlayerData.charinfo.lastname)
+            end
+
+            return 'Unknown'
+        end
+
+        function GetDNA(playerId)
+            local ply = QBCore.Functions.GetPlayer(playerId)
+
+            if ply then
+                return ('%s %s'):format(ply.PlayerData.charinfo.firstname, ply.PlayerData.charinfo.lastname)
+            end
+
+            return 'Unknown'
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        PlayerData = {}
+        PlayerLoaded = false
+
+        function IsESX()
+            return GetResourceState("es_extended") ~= "missing"
+        end
+
+        function IsQBCore()
+            return GetResourceState("qb-core") ~= "missing"
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Inv = {}
+
+        local oxinv = GetResourceState('ox_inventory'):find('start')
+        local qsinv = GetResourceState('qs-inventory'):find('start')
+        local qbinv = GetResourceState('qb-inventory'):find('start')
+        local psinv = GetResourceState('ps-inventory'):find('start')
+        local ljinv = GetResourceState('lj-inventory'):find('start')
+        local core = GetResourceState('core_inventory'):find('start')
+        local codem = GetResourceState('codem-inventory'):find('start')
+
+        if oxinv then
+            Inv = { ox = true, exp = exports.ox_inventory }
+        elseif qsinv then
+            Inv = { qs = true, exp = exports['qs-inventory'] }
+        elseif qbinv or psinv or ljinv then
+            Inv = { qb = true }
+        elseif core then
+            Inv = { core = true, exp = exports.core_inventory }
+        elseif codem then
+            Inv = { codem = true }
+        end
+
+        SetTimeout(1000, function()
+            if table.type(Inv) == 'empty' then
+                warn("No inventory resource was found, check uniq_evidence/inventory.lua")
+            end
+        end)
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        function Notify(msg, type)
+            lib.notify({
+                description = msg,
+                type = type,
+                position = 'bottom'
+            })
+        end
+
+        RegisterNetEvent('uniq_evidence:Notify', Notify)
+
+        -- callback is in server/editable.lua
+        function HasItem(item)
+            return lib.callback.await('uniq_evidence:HasItem', 100, item)
+        end
+
+        if Inv.ox then
+            Inv.exp:displayMetadata('evidence_caseId', 'Evidence No')
+        end
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        if Inv.core then
+            function GetCoreInv(source, prefix)
+                local identifier = GetIdentifier(source)
+
+                if identifier then
+                    return IsESX() and ('%s-%s'):format(prefix, identifier:gsub(':','')) or ('%s-%s'):format(prefix, identifier)
+                end
+
+                return false
+            end
+
+            lib.callback.register('uniq_evidence:server:GetCurrentWeaponCore', function(source)
+                local inventory = GetCoreInv(source, 'primary')
+
+                if inventory then
+                    local wep = Inv.exp:getInventory(inventory)[1]
+
+                    if wep then
+                        return wep
+                    end
+                end
+
+                return false
+            end)
+        end
+
+        function RegisterUsableItem()
+            if IsESX() then
+                if Config.Features.FingerprintsVehicle then
+                    ESX.RegisterUsableItem('uv_flashlight', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckFingerprints', source)
+                    end)
+                    ESX.RegisterUsableItem('tweezers', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckForShellsInVeh', source)
+                    end)
+                    ESX.RegisterUsableItem('cleaning_kit', function(source)
+                        TriggerClientEvent('uniq_evidence:DestroyFingerPrintsVeh', source)
+                    end)
+                end
+
+                if Config.Features.ShellsInVehicle then
+                    ESX.RegisterUsableItem('cleaning_shells', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckShellsVehicle', source)
+                    end)
+                end
+            elseif IsQBCore() then
+                if Config.Features.FingerprintsVehicle then
+                    QBCore.Functions.CreateUseableItem('uv_flashlight', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckFingerprints', source)
+                    end)
+                    QBCore.Functions.CreateUseableItem('tweezers', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckForShellsInVeh', source)
+                    end)
+                    QBCore.Functions.CreateUseableItem('cleaning_kit', function(source)
+                        TriggerClientEvent('uniq_evidence:DestroyFingerPrintsVeh', source)
+                    end)
+                end
+
+                if Config.Features.ShellsInVehicle then
+                    QBCore.Functions.CreateUseableItem('cleaning_shells', function(source)
+                        TriggerClientEvent('uniq_evidence:CheckShellsVehicle', source)
+                    end)
+                end
+            end
+        end
+
+        CreateThread(RegisterUsableItem)
+
+        function GetWeaponSerial(src, weapon, slot)
+            local serial = L('unknwn')
+
+            if Inv.ox then
+                local wep = Inv.exp:GetCurrentWeapon(src)
+
+                if wep and wep.metadata then
+                    serial = wep.metadata.serial
+                end
+            elseif Inv.qb then
+                local wep = QBCore.Functions.GetPlayer(src)?.Functions.GetItemByName(QBCore.Shared.Weapons[weapon].name)
+
+                if wep and wep.info then
+                    serial = wep.info.serie
+                end
+            elseif Inv.qs then
+                local items = Inv.exp:GetInventory(src)
+
+                for k,v in pairs(items) do
+                    if v.name == weapon and slot == v.slot then
+                        if v.info then
+                            serial = v.info.serie
+                            break
+                        end
+                    end
+                end
+            elseif Inv.core then
+                local inventory = GetCoreInv(src, 'primary')
+
+                if inventory then
+                    local wep = Inv.exp:getInventory(inventory)[1]
+
+                    if wep and wep.category == 'weapons' then
+                        serial = wep.info.serial
+                    end
+                end
+            elseif Inv.codem then
+                if weapon and weapon.info then
+                    serial = weapon.info.series
+                end
+            end
+
+            return serial
+        end
+
+        lib.callback.register('uniq_evidence:HasItem', function(source, item)
+            if Inv.ox then
+                local count = Inv.exp:GetItemCount(source, item)
+
+                return count > 0
+            elseif Inv.qb then
+                return QBCore.Functions.HasItem(source, item, 1)
+            elseif Inv.qs then
+                local itemm = Inv.exp:GetItemByName(source, item)
+
+                if itemm then
+                    return itemm.amount > 0
+                end
+            elseif Inv.core then
+                local inventory = GetCoreInv(source, 'content')
+                local Item = Inv.exp:getItem(inventory, item)
+
+                if Item then
+                    return Item.count > 0
+                end
+            elseif Inv.codem then
+                local itemm = exports['codem-inventory']:GetItemByName(source, item)
+
+                if itemm then
+                    return tonumber(itemm.amount) > 0
+                end
+            end
+        end)
+
+
+        function AddItem(source, item, metadata)
+            if Inv.ox then
+                Inv.exp:AddItem(source, item, 1, metadata)
+            elseif Inv.qb then
+                QBCore.Functions.GetPlayer(source)?.Functions.AddItem(item, 1, nil, metadata)
+            elseif Inv.qs then
+                Inv.exp:AddItem(source, item, 1, nil, metadata)
+            elseif Inv.core then
+                local inventory = GetCoreInv(source, 'content')
+                Inv.exp:addItem(inventory, item, 1, metadata, 'content')
+            elseif Inv.codem then
+                exports['codem-inventory']:AddItem(source, item, 1, nil, metadata)
+            end
+        end
+
+        function RemoveItem(source, item, slot)
+            if Inv.ox then
+                Inv.exp:RemoveItem(source, item, 1, nil, slot)
+            elseif Inv.qb then
+                QBCore.Functions.GetPlayer(source)?.Functions.RemoveItem(item, 1, slot)
+            elseif Inv.qs then
+                Inv.exp:RemoveItem(source, item, 1, slot)
+            elseif Inv.core then
+                local inventory = GetCoreInv(source, 'content')
+                local Item = Inv.exp:getInventory(inventory)
+
+                if Item then
+                    for k,v in pairs(Item) do
+                        if v.name == item then
+                            Inv.exp:removeItemExact(inventory, v.id, 1)
+                            break
+                        end
+                    end
+                end
+            elseif Inv.codem then
+                exports['codem-inventory']:RemoveItem(source, item, 1, slot)
+            end
+        end
+
+
+        function GetItemSlot(source, item, caseId)
+            if Inv.ox then
+                local items = Inv.exp:Search(source, 'slots', item)
+
+                if items then
+                    for k,v in pairs(items) do
+                        if v.metadata.evidence_caseId == caseId then
+                            return v.slot
+                        end
+                    end
+                end
+            elseif Inv.qb then
+                local Player = QBCore.Functions.GetPlayer(source)
+
+                for k,v in pairs(Player.PlayerData.items) do
+                    if v.name == item then
+                        if v.info.evidence_caseId == caseId then
+                            return v.slot
+                        end
+                    end
+                end
+            elseif Inv.qs then
+                local items = Inv.exp:GetInventory(source)
+
+                for k,v in pairs(items) do
+                    if v.name == item then
+                        if v.info.evidence_caseId == caseId then
+                            return v.slot
+                        end
+                    end
+                end
+            elseif Inv.core then
+                return 0
+            elseif Inv.codem then
+                for k,v in pairs(exports['codem-inventory']:GetItemsByName(source, item)) do
+                    if v.name == item and v.info then
+                        if v.info.evidence_caseId == caseId then
+                            return v.slot
+                        end
+                    end
+                end
+            end
+        end
+
+        lib.callback.register('uniq_evidence:GetEvidenceByType', function(source, typee)
+            local options = {}
+
+            if Inv.ox then
+                local items = Inv.exp:GetInventoryItems(source)
+
+                if items then
+                    for k,v in pairs(items) do
+                        if v.metadata.evidence_type == typee then
+                            options[#options + 1] = { label = v.metadata.evidence_caseId, value = v.metadata.evidence_caseId }
+                        end
+                    end
+                end
+            elseif Inv.qb then
+                local Player = QBCore.Functions.GetPlayer(source)
+
+                for k,v in pairs(Player.PlayerData.items) do
+                    if v.info.evidence_type == typee then
+                        options[#options + 1] = { label = v.info.evidence_caseId, value = v.info.evidence_caseId }
+                    end
+                end
+            elseif Inv.qs then
+                local items = Inv.exp:GetInventory(source)
+
+                for k,v in pairs(items) do
+                    if v.info.evidence_type == typee then
+                        options[#options + 1] = { label = v.info.evidence_caseId, value = v.info.evidence_caseId }
+                    end
+                end
+            elseif Inv.core then
+                local inventory = GetCoreInv(source, 'content')
+
+                if inventory then
+                    local items = Inv.exp:getInventory(inventory)
+
+                    for k, v in pairs(items) do
+                        if v.info.evidence_type == typee then
+                            options[#options + 1] = { label = v.info.evidence_caseId, value = v.info.evidence_caseId }
+                        end
+                    end
+                end
+            elseif Inv.codem then
+                local identifier = GetIdentifier(source)
+                local inv = exports['codem-inventory']:GetInventory(identifier, source)
+
+                if inv then
+                    for k,v in pairs(inv) do
+
+                        if v.info?.evidence_type == typee then
+                            options[#options + 1] = { label = v.info.evidence_caseId, value = v.info.evidence_caseId }
+                        end
+                    end
+                end
+            end
+
+            return options
+        end)
+
+        lib.callback.register('uniq_evidence:GetItemMetadata', function(source, type, caseId)
+            if Inv.ox then
+                local items = Inv.exp:GetInventoryItems(source)
+
+                if items then
+                    for k,v in pairs(items) do
+                        if v.metadata.evidence_type == type and v.metadata.evidence_caseId == caseId then
+                            return v.metadata
+                        end
+                    end
+                end
+            elseif Inv.qb then
+                local Player = QBCore.Functions.GetPlayer(source)
+
+                for k,v in pairs(Player.PlayerData.items) do
+                    if v.info.evidence_type == type and v.info.evidence_caseId == caseId then
+                        return v.info
+                    end
+                end
+            elseif Inv.qs then
+                local items = Inv.exp:GetInventory(source)
+
+                for k,v in pairs(items) do
+                    if v.info.evidence_type == type and v.info.evidence_caseId == caseId then
+                        return v.info
+                    end
+                end
+            elseif Inv.core then
+                local inventory = GetCoreInv(source, 'content')
+
+                if inventory then
+                    local items = Inv.exp:getInventory(inventory)
+
+                    for k,v in pairs(items) do
+                        if v.info?.evidence_type == type and v.info.evidence_caseId == caseId then
+                            return v.info
+                        end
+                    end
+                end
+            elseif Inv.codem then
+                local identifier = GetIdentifier(source)
+                local inv = exports['codem-inventory']:GetInventory(identifier, source)
+
+                if inv then
+                    for k,v in pairs(inv) do
+                        if v.info?.evidence_type == type and v.info.evidence_caseId == caseId then
+                            return v.info
+                        end
+                    end
+                end
+            end
+
+            return {}
+        end)
+
+
+        RegisterNetEvent('uniq_evidence:addBloodMetadata', function(weapon, target)
+            local name = GetName(target)
+            local src = source
+
+            if name then
+                if Inv.ox then
+                    if weapon and weapon.metadata then
+                        if not weapon.metadata.dna then
+                            weapon.metadata.dna = {}
+                        end
+
+                        if not lib.table.contains(weapon.metadata.dna, name) then
+                            table.insert(weapon.metadata.dna, name)
+                            Inv.exp:SetMetadata(src, weapon.slot, weapon.metadata)
+
+                            if Config.Notify.blood then
+                                TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.have_blood'), 'warning')
+                            end
+                        end
+                    end
+                elseif Inv.qb then
+                    if weapon  then
+                        local Player = QBCore.Functions.GetPlayer(src)
+
+                        if Player then
+                            local item = Player.Functions.GetItemByName(weapon.name)
+
+                            if item then
+                                if not item.info.dna then
+                                    item.info.dna = {}
+                                end
+                            end
+
+                            if not lib.table.contains(item.info.dna, name) then
+                                table.insert(item.info.dna, name)
+
+                                Player.PlayerData.items[item.slot].info = item.info
+                                Player.Functions.SetPlayerData('items', Player.PlayerData.items)
+
+                                if Config.Notify.blood then
+                                    TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.have_blood'), 'warning')
+                                end
+                            end
+                        end
+                    end
+                elseif Inv.qs then
+                    if weapon and weapon.info then
+                        if not weapon.info.dna then
+                            weapon.info.dna = {}
+                        end
+
+                        if not lib.table.contains(weapon.info.dna, name) then
+                            table.insert(weapon.info.dna, name)
+
+                            Inv.exp:SetItemMetadata(src, weapon.slot, weapon.info)
+
+                            if Config.Notify.blood then
+                                TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.have_blood'), 'warning')
+                            end
+                        end
+                    end
+                elseif Inv.core then
+                    local inventory = GetCoreInv(src, 'primary')
+                    if inventory then
+                        local weapon = Inv.exp:getInventory(inventory)
+
+                        if weapon and weapon.category == 'weapons' and weapon.info then
+                            if not weapon.info.dna then
+                                weapon.info.dna = {}
+                            end
+
+                            if not lib.table.contains(weapon.info.dna, name) then
+                                table.insert(weapon.info.dna, name)
+
+                                Inv.exp:updateMetadata(inventory, weapon.id, weapon.info)
+
+                                if Config.Notify.blood then
+                                    TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.have_blood'), 'warning')
+                                end
+                            end
+                        end
+                    end
+                elseif Inv.codem then
+                    if weapon then
+                        if not weapon.info.dna then
+                            weapon.info.dna = {}
+                        end
+
+                        if not lib.table.contains(weapon.info.dna, name) then
+                            table.insert(weapon.info.dna, name)
+
+                            exports['codem-inventory']:SetItemMetadata(src, weapon.slot, weapon.info)
+
+                            if Config.Notify.blood then
+                                TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.have_blood'), 'warning')
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+
+
+        RegisterNetEvent('uniq_evidence:server:WeaponFingerprints', function(currentWeapon)
+            local src = source
+            local name = GetName(src)
+
+            if Inv.ox then
+                local weapon = Inv.exp:Search(src, 'slots', currentWeapon.name)
+                local metadata
+
+                if weapon then
+                    for k,v in pairs(weapon) do
+                        if v.metadata.serial == currentWeapon.metadata.serial then
+                            metadata = v.metadata
+                            break
+                        end
+                    end
+                end
+
+                if not metadata.fingerprint then
+                    metadata.fingerprint = {}
+                end
+
+                if lib.table.contains(metadata.fingerprint, name) then return end
+
+                table.insert(metadata.fingerprint, name)
+                Inv.exp:SetMetadata(src, currentWeapon.slot, metadata)
+            elseif Inv.qb then
+                if currentWeapon then
+                    local Player = QBCore.Functions.GetPlayer(src)
+
+                    if Player then
+                        local item = Player.Functions.GetItemByName(currentWeapon.name)
+
+                        if not item.info.fingerprint then
+                            item.info.fingerprint = {}
+                        end
+
+                        if lib.table.contains(item.info.fingerprint, name) then return end
+
+                        table.insert(item.info.fingerprint, name)
+
+                        Player.PlayerData.items[item.slot].info = item.info
+                        Player.Functions.SetPlayerData('items', Player.PlayerData.items)
+                    end
+                end
+            elseif Inv.qs then
+                if not currentWeapon.info.fingerprint then
+                    currentWeapon.info.fingerprint = {}
+                end
+
+                if lib.table.contains(currentWeapon.info.fingerprint, name) then return end
+
+                table.insert(currentWeapon.info.fingerprint, name)
+                Inv.exp:SetItemMetadata(src, currentWeapon.slot, currentWeapon.info)
+            elseif Inv.core then
+                local inventory = GetCoreInv(src, 'primary')
+
+                if inventory then
+                    local item = Inv.exp:getInventory(inventory)[1]
+
+                    if item.category == 'weapons' then
+                        if not item.info.fingerprint then
+                            item.info.fingerprint = {}
+                        end
+
+                        if lib.table.contains(item.info.fingerprint, name) then return end
+
+                        table.insert(item.info.fingerprint, name)
+
+                        Inv.exp:updateMetadata(inventory, item.id, item.info)
+
+                        if Config.Notify.printsweapon then
+                            TriggerClientEvent('uniq_evidence:Notify', src, L('Notify.left_fp'), 'warning')
+                        end
+                    end
+                end
+            elseif Inv.codem then
+                if currentWeapon then
+                    if not currentWeapon.info.fingerprint then
+                        currentWeapon.info.fingerprint = {}
+
+                        if lib.table.contains(currentWeapon.info.fingerprint, name) then return end
+
+                        table.insert(currentWeapon.info.fingerprint, name)
+
+                        exports['codem-inventory']:SetItemMetadata(source, currentWeapon.slot, currentWeapon.info)
+                    end
+                end
+            end
+        end)
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Locales['en'] = {
+            unknwn = 'Unknown',
+
+            Input = {
+                title = 'Select Evidence',
+                desc = 'Select evidence that you want to analyse'
+            },
+
+
+            TextUI = {
+                destroy_shell = '[E] - Destroy shell evidence',
+                collect_shell = '[E] - Collect shell evidence',
+                collect_bullet = '[E] - Collect bullet evidence',
+                destroy_bullet = '[E] - Destroy bullet evidence',
+                collect_blood = '[E] - Collect blood evidence',
+                destroy_blood = '[E] - Destroy blood evidence',
+                a_shell = '[E] - Analyze Shell',
+                a_bullet = '[E] - Analyze Bullet',
+                database = '[E] - Open Evidence Database',
+                a_wep = '[E] - Analyze Weapon',
+                a_blood = '[E] - Analyze Blood',
+                a_veh_fp = '[E] - Analyze Fingerprints from vehicle'
+            },
+
+            Notify = {
+                no_bag = 'You dont have evidnece bag with you',
+                no_evidence = 'Looks like you dont have evidence with you to anaylse',
+                already_collecting = 'Somebody is already collecting this evidence',
+                cancled = 'You cancled searching',
+                cancled_a = 'You cancled analyzing evidence',
+                only_in_veh = 'You can use this only inside vehicle',
+                wrong = 'Something went wrong',
+                no_match = 'No matches',
+                no_evidence_db = 'No evidence in database',
+                left_fp = 'You left fingerprints on weapon',
+                need_hold_wep = 'You need to hold weapon in hand to scann it, make sure you wear gloves :)',
+                left_fp_veh = 'You left fingerprints in this vehicle',
+                no_veh = 'You are not inside any vehicle',
+                no_fp_found = 'No fingerprint were found in this vehicle',
+                found_fp = 'You found some fingerprints in vehicle',
+                destroyed_fp = 'You have destroyed fingerprints from this vehicle',
+                have_blood = 'You have blood on your weapon',
+                nothing_found = 'Nothing found',
+                cant_find_evidence = 'Can\'t find evidence on server, server will remove it',
+                found_shell = 'You found bullet shells, there might be more',
+                destoyed_shell = 'You destrosyed bullet shells in this vehicle',
+                deleted = 'You succesfully deleted %s from database',
+                destroyed = 'Evidence Destroyed'
+            },
+
+            ProgressBar = {
+                blood_collect = 'Collecting blood evidence',
+                searching_shells = 'Searching for bullet shells',
+                analyzing_blood = 'Analyzing Blood...',
+                shell_collet = 'Collecting shell',
+                bullet_collect = 'Collecting bullet',
+                analyzing_evidence = 'Analyzing Evidence...',
+                analyzing_wep = 'Analyzing weapon',
+                searching_fp = 'Searching for fingerprints',
+                destorying = 'Destroying Evidence'
+            },
+
+            Report = {
+                title = 'Evidence: %s',
+                street = 'Street',
+                date = 'Date',
+                time = 'Time',
+                analyst = 'Anaylist',
+                ammo = 'Ammo Type',
+                location = 'Location',
+                serial = 'Weapon Serial Number',
+                label = 'Label',
+                fp_match = 'Fingerprints on weapon matches next entities',
+                blood_match = 'Blood on weapon matches next entities',
+                blood_match2 = 'Blood matches',
+                delete = 'Delete',
+                a_on = 'Analyzed on',
+                a_at = 'Analyzed at',
+                plate = 'Vehicle Plate',
+                fp_match2 = 'Fingerprints matches next entities',
+                color = 'Vehicle color',
+                archived = 'Archived Evidence',
+                wep_analysis = 'Weapon analysis'
+            },
+
+            Database = {
+                title = 'Evidence Database',
+                bullet_shell = 'Bullet & Shell Reports',
+                weapons = 'Weapon Reports',
+                blood = 'Blood Reports',
+                veh_fp = 'Vehicle Fingerprint Reports',
+                keyword = 'Keywords: Case ID, Date or Time, Street, Serial Number etc.',
+                search = {
+                    title = 'Search',
+                    label = 'Search for specific case'
+                }
+            }
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        Config = {
+            Locale = 'en',
+            FrameworkName = IsESX() and 'es_extended' or 'qb-core',
+
+            PlayerLoadedEvent = {
+                esx = 'esx:playerLoaded',
+                qb = 'QBCore:Client:OnPlayerLoaded'
+            },
+
+            FlashLightWeapon = `WEAPON_FLASHLIGHT`,
+
+            -- Evidence will be wiped after remaining unchanged for the given time
+            DeleteEvidenceTime = '6 MONTH',
+
+            EvidenceDatabase = {
+                {
+                    coords = vec3(441.754, -996.019, 30.690),
+
+                    /*
+                        table hash   > groups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                        table array  > groups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                        string       > groups = 'police'                            > only once job can access, no grade checks
+                    */
+
+                    groups = { ['police'] = 1 },
+
+                    Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                },
+
+                -- you can add more
+            },
+
+            Features = {
+                BloodGround = true,             -- Drops blood evidence on the ground upon death.
+                WeaponBlood = true,             -- Leaves blood evidence of the target when hitting somebody with a melee weapon
+                BulletAndShell = true,          -- Leaves bullet shell on the ground while firing a weapon.
+                Bullet = true,                  -- Leaves bullet evidence if bullet hits anything
+                ShellsInVehicle = true,         -- Allows searching for bullets in vehicles.
+                FingerprintsVehicle = true,     -- Leaves fingerprint evidence upon entering a vehicle without wearing gloves.
+                FingerprintsWeapon = true,      -- Leaves fingerprint evidence upon using a weapon without wearing gloves.
+            },
+
+            /*
+                %d/%m/%Y day/month/year
+                %d-%m-%Y day-month-year
+
+                %m/%d/%Y month/day/year
+                %m-%d-%Y month-day-year
+
+                %Y/%d/%m year/day/month
+                %Y-%d-%m year-day-month
+
+                etc
+            */
+
+            DateFormat = '%d/%m/%Y', -- day/month/year
+
+            -- variations that DOESN'T have gloves, might be differnet for you, depending on clothing pack
+            Gloves = {
+                [`mp_m_freemode_01`] = {
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                    11, 12, 13, 14, 15, 18, 26, 52,
+                    53, 54, 55, 56, 57, 58, 59, 60,
+                    61, 62, 112, 113, 114, 118, 125, 132
+                },
+
+                [`mp_f_freemode_01`] = {
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                    11, 12, 13, 14, 15, 19, 59, 60, 61,
+                    62, 63, 64, 65, 66, 67, 68, 69, 70,
+                    71, 129, 130, 131, 135, 142, 149, 153,
+                    157, 161, 165
+                },
+
+                -- this models have gloves by default, you can add them here
+                [`s_m_y_swat_01`] = true,
+
+                /*
+                    [`model_name`] = { variations that doesnt have gloves }
+
+                    if case you use ped that has gloves by default but cant change variations (example s_m_y_swat_01 above),
+                    you will do next
+
+                    [`model_name`] = true     
+                */
+            },
+
+            BulletAndShell = {
+
+                BulletDestroyable = true,
+                ShellDestroyable = true,
+
+                /*
+                    table hash   > CollectEvidenceGroups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                    table array  > CollectEvidenceGroups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                    string       > CollectEvidenceGroups = 'police'                            > only once job can access, no grade checks
+                    string       > CollectEvidenceGroups = ''                                  > everyone can collect evidence
+                */
+
+                CollectEvidenceGroups = { 'police', 'sheriff' },
+
+                -- for how long it will collect evidence, 5000ms = 5 sec
+                CollectingTime = 5000,
+                
+                -- for how long it will analyze evidence, 5000ms = 5 sec
+                AnalyzingTime = 5000,
+
+                -- for how long it will analyze weapon, 10000ms = 10 sec
+                AnalyzingWeaponTime = 5000,
+
+                -- jobs that dont leave bullet evidence on ground when shooting
+                NoBulletEvidenceJob = {
+                    ['police'] = true,
+                    -- you can add more
+                },
+
+                -- weapons that should not leave bullet evidence when shooting
+                BlacklistWeapons = {
+                    [`weapon_stungun`] = true,
+                    -- you can add more
+                },
+
+                Shell = { type = 2, scaleX = 0.1, scaleY = 0.05, scaleZ = 0.07, r = 188, g = 159, b = 96 },
+                Bullet = { type = 2, scaleX = 0.1, scaleY = 0.05, scaleZ = 0.07, r = 182, g = 122, b = 94 },
+
+                -- time in minutes before evidence disappears
+                RemoveTime = 25,
+
+                -- police and grade that can delete evidence from database, must be hash
+                DeleteEvidence = { ['police'] = 2 },
+
+                -- you can add as many as you want
+                Scanner = {
+                    {
+                        type = 'shell', -- scanner for shells or bullet
+                        coords = vec3(441.882, -991.446, 30.690),
+
+                        /*
+                            table hash   > groups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                            table array  > groups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                            string       > groups = 'police'                            > only once job can access, no grade checks
+                        */
+
+                        groups = { ['police'] = 1 },
+
+                        Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                    },
+
+                    {
+                        type = 'bullet',
+                        coords = vec3(437.030, -990.831, 30.690),
+                        groups = { ['police'] = 1 },
+                        Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                    },
+
+                    -- you can add more
+                },
+
+                EvidenceReport = {
+                    date = true,            -- date when evidence was created
+                    time = true,            -- time when evidence was created
+                    street = true,          -- street address where evidence was created
+                    ammolabel = true,       -- type of weapon it was fired from, AmmoLabels
+                    weaponSerial = true,    -- serial number of weapon it was fired from, kinda op?
+                    analyst = true,         -- name of player who analysed evidence
+                    color = true,           -- color of vehicle (if bullet was taken out from vehicle)
+                    plate = true,           -- plate of vehicle where shell was taken from   
+                }
+            },
+
+            Weapon = {
+                Scanner = {
+                    {
+                        coords = vec3(437.693, -994.525, 30.690),
+
+                        /*
+                            table hash   > groups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                            table array  > groups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                            string       > groups = 'police'                            > only once job can access, no grade checks
+                        */
+
+                        groups = { ['police'] = 1 },
+
+                        Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                    },
+
+                    -- you can add more
+                },
+
+                -- police and grade that can delete evidence from database, must be hash
+                DeleteEvidence = { ['police'] = 2 },
+
+                EvidenceReport = {
+                    date = true,            -- date when evidence was scanned
+                    weaponLabel = true,     -- label of weapon
+                    time = true,            -- time when evidence was scanned
+                    ammolabel = true,       -- type of weapon it was fired from, AmmoLabels
+                    weaponSerial = true,    -- serial number of weapon
+                    analyst = true,         -- name of player who analysed evidence
+                    fingerprint = true,     -- fingerprints of last person who used gun (if not wearing gloves)
+                    dna = true,             -- DNA of victim
+                }
+            },
+
+            Blood = {
+
+                EvidenceDestroyable = true,
+
+                /*
+                    table hash   > CollectEvidenceGroups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                    table array  > CollectEvidenceGroups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                    string       > CollectEvidenceGroups = 'police'                            > only once job can access, no grade checks
+                    string       > CollectEvidenceGroups = ''                                  > everyone can collect evidence
+                */
+
+                CollectEvidenceGroups = { 'police', 'sheriff' },
+
+                -- if ranining, remove evidence?
+                RemoveEvidenceOnRain = true,
+
+                -- time in minutes before evidence disappears
+                RemoveTime = 25,
+
+                -- for how long it will collect evidence, 5000ms = 5 sec
+                CollectingTime = 5000,
+
+                -- for how long it will analyze evidence, 5000ms = 5 sec
+                AnalyzingTime = 5000,
+
+                -- blood on ground marker
+                Evidence = { type = 2, scaleX = 0.1, scaleY = 0.05, scaleZ = 0.07, r = 255, g = 0, b = 0 },
+
+                Scanner = {
+                    {
+                        coords = vec3(439.117, -993.290, 30.690),
+
+                        /*
+                            table hash   > groups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                            table array  > groups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                            string       > groups = 'police'                            > only once job can access, no grade checks
+                        */
+
+                        groups = { ['police'] = 1 },
+
+                        Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                    },
+
+                    -- you can add more
+                },
+
+                -- police and grade that can delete evidence from database, must be hash
+                DeleteEvidence = { ['police'] = 2 },
+
+                EvidenceReport = {
+                    street = true,          -- street where blood was found
+                    date = true,            -- date when evidence was scanned
+                    time = true,            -- time when evidence was scanned
+                    analyst = true,         -- name of player who analysed evidence
+                    dna = true,             -- DNA of victim
+                },
+            },
+
+            FingerprintsVehicle = {
+
+                /*
+                    table hash   > CollectEvidenceGroups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                    table array  > CollectEvidenceGroups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                    string       > CollectEvidenceGroups = 'police'                            > only once job can access, no grade checks
+                    string       > CollectEvidenceGroups = ''                                  > everyone can collect evidence
+                */
+
+                CollectEvidenceGroups = { 'police', 'sheriff' } ,
+
+                -- here you can whitelist vehicles in which you do not want to leave fingerprints
+                WhitelistModels = { `xyz`, },
+
+                -- here you can whitelist plates 
+                WhiteListPlates = { 'xyz', },
+
+                WhitelistJobs = {
+                    -- xyz and grade 2 and above wont leave fingerprints
+                    ['xyz'] = 2
+                },
+
+                -- here you can add your identifier or citizenid
+                WhitelistIdentifiers = {
+                    'char1:xyz',
+                },
+
+                -- time in msec for searching fingerprints in vehicle
+                FingerSearching = 2000,
+
+                Scanner = {
+                    {
+                        coords = vec3(461.881, -989.336, 24.915),
+
+                        /*
+                            table hash   > groups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                            table array  > groups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                            string       > groups = 'police'                            > only once job can access, no grade checks
+                        */
+
+                        groups = { ['police'] = 1 },
+
+                        Marker = { type = 2, scaleX = 0.3, scaleY = 0.2, scaleZ = 0.15, r = 30, g = 150, b = 30 },
+                    },
+
+                    -- you can add more
+                },
+
+                -- police and grade that can delete evidence from database, must be hash
+                DeleteEvidence = { ['police'] = 2 },
+
+                EvidenceReport = {
+                    street = true,          -- street where fingerprints were found
+                    date = true,            -- date when evidence was taken
+                    time = true,            -- time when evidence was taken
+                    analyst = true,         -- name of player who analysed evidence
+                    plate = true,           -- vehicle plates
+                    color = true,           -- vehicle color
+                }
+            },
+
+            ShellsInVehicle = {
+
+                /*
+                    table hash   > CollectEvidenceGroups = { ['police'] = 1, ['sheriff'] = 5 } > grade 1 (and above) police and grade 5 (and above) sheriff can access
+                    table array  > CollectEvidenceGroups = { 'police', 'sheriff' }             > police and sherrif can access, no grade check
+                    string       > CollectEvidenceGroups = 'police'                            > only once job can access, no grade checks
+                    string       > CollectEvidenceGroups = ''                                  > everyone can collect evidence
+                */
+
+                CollectEvidenceGroups = { 'police', 'sheriff' },
+
+                -- jobs that wont leave shell evidence in vehicle
+                NoShell = {
+                    ['police'] = true
+                },
+
+                -- weapons that should not leave shell evidence when shooting
+                BlacklistWeapons = {
+                    [`weapon_stungun`] = true
+                },
+
+                -- duration for searching for shells in vehicle
+                SearchingDuration = 2000,
+            },
+
+            Notify = {
+                blood = true,           -- notify player that he have blood on weapon after hitting somebody
+                printsweapon = true,    -- notify player that he left fingerprints on weapon
+                printsvehicle = true,   -- notify player that he left fingerprints in vehicle
+            },
+
+            AmmoLabels = {
+                [`WEAPON_ADVANCEDRIFLE`] = '5.56x45',
+                [`WEAPON_APPISTOL`] = '9mm',
+                [`WEAPON_ASSAULTRIFLE`] = '7.62x39',
+                [`WEAPON_ASSAULTRIFLE_MK2`] = '7.62x39',
+                [`WEAPON_ASSAULTSHOTGUN`] = '12 Gauge',
+                [`WEAPON_ASSAULTSMG`] = '5.56x45',
+                [`WEAPON_AUTOSHOTGUN`] = '12 Gauge',
+                [`WEAPON_BULLPUPRIFLE`] = '5.56x45',
+                [`WEAPON_BULLPUPRIFLE_MK2`] = '5.56x45',
+                [`WEAPON_BULLPUPSHOTGUN`] = '12 Gauge',
+                [`WEAPON_CARBINERIFLE`] = '5.56x45',
+                [`WEAPON_CARBINERIFLE_MK2`] = '5.56x45',
+                [`WEAPON_CERAMICPISTOL`] = '9mm',
+                [`WEAPON_COMBATMG`] = '5.56x45',
+                [`WEAPON_COMBATMG_MK2`] = '7.62x39',
+                [`WEAPON_COMBATPDW`] = '9mm',
+                [`WEAPON_COMBATPISTOL`] = '9mm',
+                [`WEAPON_COMBATSHOTGUN`] = '12 Gauge',
+                [`WEAPON_COMPACTLAUNCHER`] = '40mm Explosive',
+                [`WEAPON_COMPACTRIFLE`] = '7.62x39',
+                [`WEAPON_DBSHOTGUN`] = '12 Gauge',
+                [`WEAPON_DOUBLEACTION`] = '.38 LC',
+                [`WEAPON_EMPLAUNCHER`] = 'EMP round',
+                [`WEAPON_FIREWORK`] = 'Firework',
+                [`WEAPON_FLAREGUN`] = 'Flare round',
+                [`WEAPON_GADGETPISTOL`] = '9mm',
+                [`WEAPON_GRENADELAUNCHER`] = '40mm Explosive',
+                [`WEAPON_GUSENBERG`] = '.45 ACP',
+                [`WEAPON_HEAVYPISTOL`] = '.45 ACP',
+                [`WEAPON_HEAVYRIFLE`] = '5.56x45',
+                [`WEAPON_HEAVYSHOTGUN`] = '12 Gauge',
+                [`WEAPON_HEAVYSNIPER`] = '.50 BMG',
+                [`WEAPON_HEAVYSNIPER_MK2`] = '.50 BMG',
+                [`WEAPON_HOMINGLAUNCHER`] = 'Rocket',
+                [`WEAPON_MACHINEPISTOL`] = '9mm',
+                [`WEAPON_MARKSMANPISTOL`] = '.22 Long Rifle',
+                [`WEAPON_MARKSMANRIFLE`] = '7.62x51',
+                [`WEAPON_MARKSMANRIFLE_MK2`] = '7.62x51',
+                [`WEAPON_MG`] = '7.62x39',
+                [`WEAPON_MICROSMG`] = '.45 ACP',
+                [`WEAPON_MILITARYRIFLE`] = '5.56x45',
+                [`WEAPON_MINIGUN`] = '7.62x39',
+                [`WEAPON_MINISMG`] = '9mm',
+                [`WEAPON_MUSKET`] = '.50 Ball',
+                [`WEAPON_NAVYREVOLVER`] = '.44 Magnum',
+                [`WEAPON_PISTOL`] = '9mm',
+                [`WEAPON_PISTOL50`] = '.50 AE',
+                [`WEAPON_PISTOLXM3`] = '9mm',
+                [`WEAPON_PISTOL_MK2`] = '9mm',
+                [`WEAPON_PRECISIONRIFLE`] = '7.62x51',
+                [`WEAPON_PUMPSHOTGUN`] = '12 Gauge',
+                [`WEAPON_PUMPSHOTGUN_MK2`] = '12 Gauge',
+                [`WEAPON_RAILGUN`] = 'Railgun charge',
+                [`WEAPON_RAILGUNXM3`] = 'Railgun charge',
+                [`WEAPON_RAYCARBINE`] = 'Laser charge',
+                [`WEAPON_RAYMINIGUN`] = 'Laser charge',
+                [`WEAPON_REVOLVER`] = '.44 Magnum',
+                [`WEAPON_REVOLVER_MK2`] = '.44 Magnum',
+                [`WEAPON_RPG`] = 'Rocket',
+                [`WEAPON_SAWNOFFSHOTGUN`] = '12 Gauge',
+                [`WEAPON_SMG`] = '9mm',
+                [`WEAPON_SMG_MK2`] = '9mm',
+                [`WEAPON_SNIPERRIFLE`] = '7.62x51',
+                [`WEAPON_SNSPISTOL`] = '.45 ACP',
+                [`WEAPON_SNSPISTOL_MK2`] = '.45 ACP',
+                [`WEAPON_SPECIALCARBINE`] = '5.56x45',
+                [`WEAPON_SPECIALCARBINE_MK2`] = '5.56x45',
+                [`WEAPON_TACTICALRIFLE`] = '5.56x45',
+                [`WEAPON_TECPISTOL`] = '9mm',
+                [`WEAPON_VINTAGEPISTOL`] = '9mm',
+            }
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```lua
+        
+        ```
+    </Tabs.Tab>
+
+</Tabs>
